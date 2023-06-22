@@ -1,7 +1,7 @@
 #include "../head_file/memory.h"
 #include "../head_file/tool.h"
 
-void memory::read() {
+void memory::init() {
     char source[10], tmp[10];
     unsigned int addr = 0;
     while (scanf("%s", source) != EOF) {
@@ -23,6 +23,16 @@ void memory::read() {
 
 int memory::load_memory(int addr, int byte_number) {
     if (byte_number == 4) { return memory_unit[addr]; }//直接给出
-    int fetch = (1 << (byte_number << 2)) - 1;
+    int fetch = (1 << (byte_number << 3)) - 1;
     return memory_unit[addr] & fetch;
+}
+
+void memory::store_memory(int addr, int source, int byte_number) {
+    if (byte_number == 4) { memory_unit[addr] = source; }
+    else {
+        int fetch = (1 << (byte_number << 3)) - 1;
+        source = source & fetch;//取source的byte_number个字节
+        fetch = -(1 << (byte_number << 3));
+        memory_unit[addr] = (memory_unit[addr] & fetch) | source;
+    }
 }

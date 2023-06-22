@@ -12,9 +12,11 @@ private:
 
 public:
 
-    void read();//读入16进制数下的内存并存储
+    void init();//读入16进制数下的内存并存储
 
     int load_memory(int addr, int byte_number);//读取addr处byte_number个字节的内存
+
+    void store_memory(int addr, int source, int byte_number);//将source的byte_number个字节写入addr处的内存
 
 };
 

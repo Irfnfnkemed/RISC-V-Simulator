@@ -28,6 +28,9 @@ int bin_to_dec(const bool source[], int digit) {
 }
 
 int sign_extend(int source, int digit) {
-    if (source >> (digit - 1)) { source = source & (-1); }
+    if (digit < 32 && source >> (digit - 1)) {
+        int fetch = -(1 << digit);
+        source = source | fetch;
+    }
     return source;
 }

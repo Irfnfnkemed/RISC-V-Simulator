@@ -1,14 +1,8 @@
 #include "../head_file/ALU.h"
 
-void ALU::set_ALU(int instruction_, int operand_one_, int operand_two_) {
-    instruction = instruction_;
-    operand_one = operand_one_;
-    operand_two = operand_two_;
-}
-
-int ALU::execute() {
-    int shift;
-    switch (instruction) {
+int ALU::execute(int instruction, int operand_one, int operand_two) {
+    int shift, output;
+    switch (instruction - OFFSET) {
         case AND:
         case ANDI:
             output = operand_one & operand_two;
