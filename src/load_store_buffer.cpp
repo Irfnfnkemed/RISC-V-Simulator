@@ -5,9 +5,9 @@ void load_store_buffer::init(memory *Memory_, reorder_buffer *Reorder_buffer_) {
     Reorder_buffer = Reorder_buffer_;
 }
 
-void load_store_buffer::push_buffer(int instruction_, int value_one_, int value_two_,
-                                    int depend_one_, int depend_two_,
-                                    int offset, int destination_, int tag_) {
+void load_store_buffer::add_instruction(int instruction_, int value_one_, int value_two_,
+                                        int depend_one_, int depend_two_,
+                                        int offset, int destination_, int tag_) {
     buffer.push(load_store_unit{instruction_ - OFFSET, value_one_, value_two_,
                                 depend_one_, depend_two_,
                                 offset, destination_, tag_, false});
@@ -15,7 +15,7 @@ void load_store_buffer::push_buffer(int instruction_, int value_one_, int value_
 
 void load_store_buffer::execute_rising_edge() {
     for (auto iter = buffer.begin(); iter != buffer.end(); ++iter) {
-        if (iter->depend_one == -1 && iter->depend_two == -1) {//计算地址
+        if (!iter->execute && iter->depend_one == -1 && iter->depend_two == -1) {//计算地址
             iter->value_one = address_ALU.execute(iter->value_one, iter->offset);
             iter->execute = true;
         }
@@ -60,14 +60,16 @@ void load_store_buffer::execute_falling_edge() {
 }
 
 
-void load_store_buffer::response_CDB(int reg_, int data_) {
+void load_store_buffer::response_CDB(int tag_, int reg_, int data_) {
     for (auto iter = buffer.begin(); iter != buffer.end(); ++iter) {
-        if (iter->depend_one == reg_) {
-            iter->depend_one = -1;
-            iter->value_one = data_;
-        } else if (iter->depend_two == reg_) {
-            iter->depend_two = -1;
-            iter->value_two = data_;
+        if (iter->tag == tag_) {
+            if (iter->depend_one == reg_) {
+                iter->depend_one = -1;
+                iter->value_one = data_;
+            } else if (iter->depend_two == reg_) {
+                iter->depend_two = -1;
+                iter->value_two = data_;
+            }
         }
     }
 }

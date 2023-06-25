@@ -25,7 +25,7 @@ private:
         int status = 0;//0表未计算，1表执行但未提交，2表已经提交至ROB
     };
 
-    algorithm_logic_unit *ALU;
+    algorithm_logic_unit ALU;
     reorder_buffer *Reorder_buffer;
 
     reservation_unit buffer[16];
@@ -43,7 +43,7 @@ public:
 
     void execute_falling_edge();
 
-    //监听CDB。删去标签为tag_的指令，并修改reg_对应的值。若不修改，则用-1表示
+    //监听CDB。删去标签为tag_的指令，并修改reg_对应的值
     void response_CDB(int tag_, int reg_, int data_);
 
 };

@@ -12,12 +12,12 @@ private:
         LB, LH, LW, LBU, LHU, SB, SH, SW
     };
     struct load_store_unit {
-        int instruction;//load_store_buffer相关的指令编号(减去OFFSET)
+        int instruction;//load_store_buffer相关的指令编号(减去OFFSET)，空时为-1
         int value_one, value_two;//两个相关寄存器的值
         int depend_one = -1, depend_two = -1;//两个相关寄存器对前面指令的依赖关系，存储相应的寄存器编号，无依赖时默认为-1
         int offset;//偏移量
         int destination;//存指令的这一项是无用的
-        int tag;//读指令在reservation_station中对应的tag，写指令的tag值是无用的
+        int tag;//读写指令在ROB中对应的tag
         bool execute = false;//是否已经计算出地址
     };
 
@@ -35,16 +35,16 @@ public:
     void init(memory *Memory_, reorder_buffer *Reorder_buffer_);
 
     //添加任务，instruction_为未处理的指令编号
-    void push_buffer(int instruction_, int value_one_, int value_two_,
-                     int depend_one_, int depend_two_,
-                     int offset, int destination_, int tag_);
+    void add_instruction(int instruction_, int value_one_, int value_two_,
+                         int depend_one_, int depend_two_,
+                         int offset, int destination_, int tag_);
 
     void execute_rising_edge();
 
     void execute_falling_edge();
 
     //监听CDB
-    void response_CDB(int reg_, int data_);
+    void response_CDB(int tag_, int reg_, int data_);
 };
 
 #endif //RISC_V_SIMULATOR_LOAD_STORE_BUFFER_H

@@ -18,14 +18,14 @@ void reservation_station::execute_rising_edge() {
         if (buffer[i].instruction >= 0 && buffer[i].status == 0) {
             if (buffer[i].instruction < 9) {
                 if (buffer[i].depend_one == -1) {
-                    buffer[i].immediate = ALU->execute(buffer[i].instruction,
-                                                       buffer[i].value_one, buffer[i].immediate);
+                    buffer[i].immediate = ALU.execute(buffer[i].instruction,
+                                                      buffer[i].value_one, buffer[i].immediate);
                     buffer[i].status = 1;
                 }
             } else {
                 if (buffer[i].depend_one == -1 && buffer[i].depend_one == -1) {
-                    buffer[i].immediate = ALU->execute(buffer[i].instruction,
-                                                       buffer[i].value_one, buffer[i].value_two);
+                    buffer[i].immediate = ALU.execute(buffer[i].instruction,
+                                                      buffer[i].value_one, buffer[i].value_two);
                     buffer[i].status = 1;
                 }
             }
@@ -42,13 +42,9 @@ void reservation_station::execute_falling_edge() {
 }
 
 void reservation_station::response_CDB(int tag_, int reg_, int data_) {
-    if (tag_ != -1) {
-        for (int i = 0; i < 16; ++i) {
-            if (buffer[i].tag == tag_) { buffer[i].instruction = -1; }//设为空闲
-        }
-    }
-    if (reg_ != -1) {
-        for (int i = 0; i < 16; ++i) {
+    for (int i = 0; i < 16; ++i) {
+        if (buffer[i].tag == tag_) {
+            buffer[i].instruction = -1; //设为空闲
             if (buffer[i].depend_one == reg_) {
                 buffer[i].depend_one = -1;
                 buffer[i].value_one = data_;
