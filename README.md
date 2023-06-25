@@ -1,7 +1,6 @@
 # RISC-V-Simulator
 ## 示意图
-
-<img src="C:/Users/irfnfnkemed/Desktop/1.jpg"/>
+![](https://notes.sjtu.edu.cn/uploads/upload_0b1962c7b051c9018dfef316b450a806.jpg)
 
 ## 过程
 1. 各个模块执行
