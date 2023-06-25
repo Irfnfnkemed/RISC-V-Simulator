@@ -1,6 +1,6 @@
 # RISC-V-Simulator
 ## 示意图
-![](https://notes.sjtu.edu.cn/uploads/upload_0b1962c7b051c9018dfef316b450a806.jpg)
+![](https://notes.sjtu.edu.cn/uploads/upload_5cde8b01a7c843eab0fd564cd3da660b.jpg)
 
 ## 过程
 1. 各个模块执行
@@ -22,7 +22,7 @@
 ### Load/Store Buffer
 执行队列中的读/写操作。完成指令后，弹出队列。
 
-若完成读指令，将其添加至CDB缓冲区中。
+若完成读指令，将其返回至ROB缓冲区中。
 
 ### Common Data Bus
 删去RS缓冲区中的对应指令（依赖关系在ALU算完后已经更改）。
