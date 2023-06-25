@@ -17,7 +17,7 @@ private:
 
     struct reservation_unit {
         int instruction = -1;//指令编号(减去OFFSET)，为-1时表示该位置为空
-        int value_one, value_two;//两个寄存器(若存在)的值
+        int value_one, value_two;//两个寄存器(若存在)的值。若有依赖关系，则存储寄存器编号
         int depend_one = -1, depend_two = -1;//两个寄存器(若存在)对前面指令的依赖关系，存储依赖指令的tag，无依赖时默认为-1
         int immediate;//存放立即数(或者运算结果)
         int destination;//最终存放的目标寄存器编号(若存在)

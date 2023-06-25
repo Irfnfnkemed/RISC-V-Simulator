@@ -13,7 +13,7 @@ private:
     };
     struct load_store_unit {
         int instruction;//load_store_buffer相关的指令编号(减去OFFSET)，空时为-1
-        int value_one, value_two;//两个相关寄存器的值
+        int value_one, value_two;//两个相关寄存器的值。若有依赖关系，则存储寄存器编号
         int depend_one = -1, depend_two = -1;//两个相关寄存器对前面指令的依赖关系，存储相应的寄存器编号，无依赖时默认为-1
         int offset;//偏移量
         int destination;//存指令的这一项是无用的

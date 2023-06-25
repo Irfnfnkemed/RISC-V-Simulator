@@ -45,13 +45,12 @@ void reservation_station::response_CDB(int tag_, int reg_, int data_) {
     for (int i = 0; i < 16; ++i) {
         if (buffer[i].tag == tag_) {
             buffer[i].instruction = -1; //设为空闲
-            if (buffer[i].depend_one == reg_) {
-                buffer[i].depend_one = -1;
-                buffer[i].value_one = data_;
-            } else if (buffer[i].depend_two == reg_) {
-                buffer[i].depend_two = -1;
-                buffer[i].value_two = data_;
-            }
+        } else if (buffer[i].depend_one == tag_) {
+            if (buffer[i].value_one == reg_) { buffer[i].value_one = data_; }
+            buffer[i].depend_one = -1;
+        } else if (buffer[i].depend_two == tag_) {
+            if (buffer[i].value_two == reg_) { buffer[i].value_two = data_; }
+            buffer[i].depend_two = -1;
         }
     }
 }

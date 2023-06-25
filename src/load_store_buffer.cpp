@@ -62,14 +62,12 @@ void load_store_buffer::execute_falling_edge() {
 
 void load_store_buffer::response_CDB(int tag_, int reg_, int data_) {
     for (auto iter = buffer.begin(); iter != buffer.end(); ++iter) {
-        if (iter->tag == tag_) {
-            if (iter->depend_one == reg_) {
-                iter->depend_one = -1;
-                iter->value_one = data_;
-            } else if (iter->depend_two == reg_) {
-                iter->depend_two = -1;
-                iter->value_two = data_;
-            }
+        if (iter->depend_one == tag_) {
+            if (iter->value_one == reg_) { iter->value_one = data_; }
+            iter->depend_one = -1;
+        } else if (iter->depend_two == reg_) {
+            if (iter->depend_two == reg_) { iter->value_two = data_; }
+            iter->depend_two = -1;
         }
     }
 }
