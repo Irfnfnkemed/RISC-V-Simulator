@@ -3,20 +3,72 @@
 
 #include "../head_file/tool.h"
 
-class algorithm_logic_unit {
+class base_ALU {
+protected:
+    int free = 2;//支持两条运算同时进行
+public:
+    //是否仍有空闲
+    bool is_free();
+
+    //刷新
+    void flush();
+
+    //设置操作名和操作数，对ALU指令进行操作，并输出结果
+    virtual int execute(int instruction, int operand_one, int operand_two) = 0;
+};
+
+
+//逻辑运算
+class logic_ALU : public base_ALU {
+public:
+    int execute(int instruction, int operand_one, int operand_two);
+};
+
+//算术运算
+class add_ALU : public base_ALU {
+public:
+    int execute(int instruction, int operand_one, int operand_two);
+};
+
+//位运算
+class shift_ALU : public base_ALU {
+public:
+    int execute(int instruction, int operand_one, int operand_two);
+};
+
+//比较运算
+class compare_ALU : public base_ALU {
+public:
+    int execute(int instruction, int operand_one, int operand_two);
+};
+
+
+class address_ALU : public base_ALU {
+public:
+    //计算地址
+    int execute(int addr, int offset);
+};
+
+class all_ALU {
 private:
-    enum INSTRUCTION {
-        ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI,
-        ADD, SUB, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND
+    enum cate {
+        logic, add, shift, compare
     };
 
-    const int OFFSET = 18;//ALU对应的指令编号为18至36，初始指令偏移量为18
+    logic_ALU Logic_ALU;
+    add_ALU Add_ALU;
+    shift_ALU Shift_ALU;
+    compare_ALU Compare_ALU;
+
+    //得到对应ALU的种类
+    int get_ALU_unit(int instruction);
 
 public:
+    bool is_free(int instruction);
 
-    //设置操作名和操作数(instruction_为未处理的指令编号)，对ALU指令进行操作，并输出结果
+    void flush();
+
     int execute(int instruction, int operand_one, int operand_two);
-
 };
 
 #endif //RISC_V_SIMULATOR_ALGORITHM_LOGIC_UNIT_H
