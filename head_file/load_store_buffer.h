@@ -12,6 +12,7 @@ private:
         int instruction = -1;//load_store_buffer相关的指令编号，空时为-1
         int value_one, value_two;//两个相关寄存器的值
         int tag;//读写指令在ROB中对应的tag
+        bool ready = false;
     };
 
     queue<load_store_unit, 64> buffer;//循环队列
@@ -26,13 +27,19 @@ private:
     //设置下一个读写任务
     void set_task();
 
+    //完成读操作后返回至ROB
+    void return_to_ROB(int tag_, int data_);
+
 public:
 
     //初始化，关联相关模块
     void init(memory *Memory_, reorder_buffer *ROB_);
 
-    //添加任务
-    void add_instruction(int instruction_, int value_one_, int value_two_, int tag_);
+    //添加任务(占位，尚不可执行)
+    void add_instruction(int tag_);
+
+    //上传数据(现可执行)
+    void update_data(int instruction_, int value_one_, int value_two_, int tag_);
 
     //执行函数
     void execute();

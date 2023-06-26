@@ -32,30 +32,41 @@ void load_store_buffer::load_store_memory() {
                     Memory->store_memory(task.value_one, task.value_two, 4);
             }
             if (task.instruction >= LB && task.instruction <= LHU) {//将load指令返回ROB
-                ROB->set_ready(task.tag, task.value_two);
+                return_to_ROB(task.tag, task.value_two);
             }
         }
     }
 }
 
 void load_store_buffer::set_task() {
-    if (!clock_time && !buffer.empty()) { clock_time = 3; }
+    if (!clock_time && !buffer.empty() && buffer.front().ready) { clock_time = 3; }
 }
+
+void load_store_buffer::return_to_ROB(int tag_, int data_) { ROB->set_ready(tag_, data_); }
 
 void load_store_buffer::init(memory *Memory_, reorder_buffer *ROB_) {
     Memory = Memory_;
     ROB = ROB_;
 }
 
-void load_store_buffer::add_instruction(int instruction_, int value_one_, int value_two_, int tag_) {
-    buffer_next.push(load_store_unit{instruction_, value_one_, value_two_, tag_});
+void load_store_buffer::add_instruction(int tag_) {
+    buffer_next.push(load_store_unit{1, 0, 0, tag_, false});
+}
+
+void load_store_buffer::update_data(int instruction_, int value_one_, int value_two_, int tag_) {
+    for (auto iter = buffer_next.begin(); iter != buffer_next.end(); ++iter) {
+        if (iter->tag == tag_) {
+            iter->instruction = instruction_;
+            iter->value_one = value_one_;
+            iter->value_two = value_two_;
+            iter->ready = true;
+        }
+    }
 }
 
 void load_store_buffer::execute() {
-    load_store_memory();
     set_task();
+    load_store_memory();
 }
 
-void load_store_buffer::flush() {
-    buffer = buffer_next;
-}
+void load_store_buffer::flush() { buffer = buffer_next; }
