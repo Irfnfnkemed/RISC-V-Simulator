@@ -24,6 +24,7 @@ int add_ALU::execute(int instruction, int operand_one, int operand_two) {
     switch (instruction) {
         case ADD:
         case ADDI:
+        case JALR:
             return operand_one + operand_two;
         case SUB:
             return operand_one - operand_two;
@@ -50,10 +51,20 @@ int compare_ALU::execute(int instruction, int operand_one, int operand_two) {
     switch (instruction) {
         case SLT:
         case SLTI:
+        case BLT:
             return (operand_one < operand_two);
         case SLTU:
         case SLTIU:
+        case BLTU:
             return (unsigned(operand_one) < unsigned(operand_two));
+        case BEQ:
+            return (operand_one == operand_two);
+        case BNE:
+            return (operand_one != operand_two);
+        case BGE:
+            return (operand_one >= operand_two);
+        case BGEU:
+            return (unsigned(operand_one) >= unsigned(operand_two));
     }
 }
 
@@ -73,6 +84,7 @@ int all_ALU::get_ALU_unit(int instruction) {
             return logic;
         case ADD:
         case ADDI:
+        case JALR:
         case SUB:
             return add;
         case SRL:
@@ -86,6 +98,12 @@ int all_ALU::get_ALU_unit(int instruction) {
         case SLTI:
         case SLTU:
         case SLTIU:
+        case BEQ:
+        case BNE:
+        case BLT:
+        case BGE:
+        case BLTU:
+        case BGEU:
             return compare;
     }
 }
