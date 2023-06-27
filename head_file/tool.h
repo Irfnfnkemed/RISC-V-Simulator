@@ -92,7 +92,7 @@ public:
     int get_index() { return tail + base * size; }
 
     //按下标寻找
-    element &find(int index) { return Queue[index]; }
+    element &find(int index) { return Queue[index & mod]; }
 
     void clear() { head = tail = 0; }
 };
