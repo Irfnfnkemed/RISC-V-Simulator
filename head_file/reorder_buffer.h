@@ -12,6 +12,10 @@ class register_file;
 
 class program_counter;
 
+class decoder;
+
+class predictor;
+
 class reorder_buffer {
 private:
 
@@ -30,29 +34,43 @@ private:
     load_store_buffer *LSB;
     register_file *RF;
     program_counter *PC;
+    decoder *Decoder;
+    predictor *PRE;
     queue<reorder_buffer_unit, 16> buffer;
     queue<reorder_buffer_unit, 16> buffer_next;//缓存
 
     //在RF中添加标记
     void set_tag(int instr_, int tag_, int dest_);
 
+    //得到依赖关系和数据
+    void get(int reg_, int &depend_, int &value_);
+
     //发射指令
     void launch();
 
     //提交指令
-    void commit();
+    void commit(bool &to_be_cleared, bool &to_be_finished);
+
+    //从Decoder中获得一条指令
+    void add_instruction();
 
 public:
+    //初始化
     void init(reservation_station *RS_, load_store_buffer *LSB_,
-              register_file *RF_, program_counter *PC_);
+              register_file *RF_, program_counter *PC_,
+              decoder *Decoder_, predictor *PRE_);
 
-    void execute();
+    //执行
+    void execute(bool &to_be_cleared, bool &to_be_finished);
 
     //将对应指令设为ready状态，将返回数据存到立即数中
     void set_ready(int tag_, int data_);
 
     //刷新
     void flush();
-}
+
+    //分支预测错误，清除所有数据
+    void clear();
+};
 
 #endif //RISC_V_SIMULATOR_REORDER_BUFFER_H

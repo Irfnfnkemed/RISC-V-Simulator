@@ -3,6 +3,8 @@
 #include "load_store_buffer.h"
 #include "register_file.h"
 #include "program_counter.h"
+#include "decoder.h"
+#include "predictor.h"
 
 void reorder_buffer::set_tag(int instr_, int tag_, int dest_) {
     if (!((instr_ >= BEQ && instr_ <= BGEU) || (instr_ >= SB && instr_ <= SW))) {
@@ -10,76 +12,132 @@ void reorder_buffer::set_tag(int instr_, int tag_, int dest_) {
     }
 }
 
-void reorder_buffer::launch() {//发射指令
-    reorder_buffer_unit &task = buffer_next.back();
-    if (!buffer.empty() && !task.launch) {
-        task.launch = true;
-        if (task.instr == LUI) {
-            task.ready = true;//可以直接提交
-        } else if (task.instr == AUIPC) {
-            task.imd = Address_ALU.execute(task.reg_two, task.imd);//原本reg_two存着PC
-            task.ready = true;//可以提交
-        } else if (task.instr == JAL) {
-            task.reg_two = Address_ALU.execute(task.reg_two, 4);//用reg_two暂存PC+4
-            task.ready = true;//可以提交
-        } else if (task.instr == JALR) {
-            task.reg_two = Address_ALU.execute(task.reg_two, 4);//用reg_two暂存PC+4
-            RS->add_instruction(JALR, RF->get_value(task.reg_one), -1,
-                                RF->get_depend(task.reg_one), -1, task.imd, task.tag);
-        } else if ((task.instr >= LB && task.instr <= SW)) {
-            RS->add_instruction(task.instr, RF->get_value(task.reg_one), -1,
-                                RF->get_depend(task.reg_one), -1, task.imd, task.tag);
-            LSB->add_instruction(task.tag);
-        } else if ((task.instr >= LB && task.instr <= SRAI)) {//有立即数
-            RS->add_instruction(task.instr, RF->get_value(task.reg_one), -1,
-                                RF->get_depend(task.reg_one), -1, task.imd, task.tag);
-        } else {//两个寄存器
-            RS->add_instruction(task.instr, RF->get_value(task.reg_one), RF->get_value(task.reg_two),
-                                RF->get_depend(task.reg_one), RF->get_depend(task.reg_two), -1, task.tag);
+void reorder_buffer::get(int reg_, int &depend_, int &value_) {
+    RF->get(reg_, depend_, value_);
+    if (depend_ != -1) {
+        if (buffer.find(depend_).ready) {
+            value_ = buffer.find(depend_).imd;
+            depend_ = -1;
         }
-        set_tag(task.instr, task.tag, task.dest);//设置相关的依赖关系
     }
 }
 
-void reorder_buffer::commit() {
+void reorder_buffer::launch() {//发射指令
+    if (!buffer.empty()) {
+        reorder_buffer_unit &task = buffer_next.back();
+        if (!task.launch) {
+            task.launch = true;
+            if (task.instr == END) {
+                task.ready = true;//可以直接提交
+
+            } else if (task.instr == LUI) {
+                task.ready = true;//可以直接提交
+            } else if (task.instr == AUIPC) {
+                task.imd = Address_ALU.execute(task.reg_two, task.imd);//原本reg_two存着PC
+                task.ready = true;//可以提交
+            } else if (task.instr == JAL) {
+                task.reg_two = Address_ALU.execute(task.reg_two, 4);//用reg_two暂存PC+4
+                task.ready = true;//可以提交
+            } else if (task.instr == JALR) {
+                task.reg_two = Address_ALU.execute(task.reg_two, 4);//用reg_two暂存PC+4
+                int depend, value;
+                get(task.reg_one, depend, value);
+                RS->add_instruction(JALR, value, -1, depend, -1, task.imd, task.tag);
+            } else if ((task.instr >= LB && task.instr <= SW)) {
+                int depend, value;
+                get(task.reg_one, depend, value);
+                RS->add_instruction(task.instr, value, -1, depend, -1, task.imd, task.tag);
+                LSB->add_instruction(task.tag);
+            } else if ((task.instr >= LB && task.instr <= SRAI)) {//有立即数
+                int depend, value;
+                get(task.reg_one, depend, value);
+                RS->add_instruction(task.instr, value, -1, depend, -1, task.imd, task.tag);
+            } else {//两个寄存器
+                int depend_one, value_one, depend_two, value_two;
+                get(task.reg_one, depend_one, value_one);
+                get(task.reg_two, depend_two, value_two);
+                RS->add_instruction(task.instr, value_one, value_two, depend_one, depend_two, -1, task.tag);
+            }
+            set_tag(task.instr, task.tag, task.dest);//设置相关的依赖关系
+        }
+    }
+}
+
+void reorder_buffer::commit(bool &to_be_cleared, bool &to_be_finished) {
     if (!buffer.empty() && buffer.front().ready) {
         reorder_buffer_unit &task = buffer_next.front();
-        if (task.instr >= SB && task.instr <= SW) {
-            LSB->update_data(task.instr, task.imd, RF->get_value(task.reg_two), -1);//返回到LSB中
+        if (task.instr == END) {
+            to_be_finished = true;//结束
+        } else if (task.instr >= SB && task.instr <= SW) {
+            int depend, value;
+            get(task.reg_two, depend, value);
+            LSB->update_data(task.instr, task.imd, value, task.tag);//返回到LSB中
         } else if (task.instr == JAL) {
             RF->flush_tag(task.tag, task.reg_two);//reg_two暂存着PC+4
+            RS->flush_depend(task.tag, task.reg_two);//更新RS
         } else if (task.instr == JALR) {
             RF->flush_tag(task.tag, task.reg_two);//reg_two暂存着PC+4
+            RS->flush_depend(task.tag, task.reg_two);//更新RS
             PC->set_offset(task.imd);
-            ////////////////////////////////////////stop = true;
+            PC->set_stop(false);//重新开始读入
         } else if (task.instr >= BEQ && task.instr <= BGEU) {
-            ///////////////////////////////////////////if (task.imd) { PC->set_offset(task.dest); }//分支指令，将偏移量暂存在dest中
-        } else { RF->flush_tag(task.tag, task.imd); }
+            if (task.imd) {//跳转
+                if (task.dest & 1) { PRE->change_counter(true); }//预测正确
+                else {
+                    PRE->change_counter(false);//预测错误
+                    PC->set_offset(task.dest);//跳转PC
+                    to_be_cleared = true;
+                }
+            } else {//不跳转
+                if (task.dest & 1) {
+                    PRE->change_counter(false);//预测错误
+                    PC->set_offset(task.dest + 3, false);//跳转PC
+                    to_be_cleared = true;
+                } else { PRE->change_counter(true); }//预测正确
+            }
+        } else {
+            RF->flush_tag(task.tag, task.imd);
+            RS->flush_depend(task.tag, task.imd);
+        }
         buffer_next.pop();//删除队首
     }
 }
 
+void reorder_buffer::add_instruction() {
+    if (!buffer.full() && !Decoder->is_send()) {
+        int instr, reg_one, reg_two, imd, dest;
+        Decoder->fetch_instr(instr, reg_one, reg_two, imd, dest);
+        buffer_next.push(reorder_buffer_unit{buffer_next.get_index(), instr, reg_one, reg_two,
+                                             imd, dest, false, false});
+    }
+}
+
 void reorder_buffer::init(reservation_station *RS_, load_store_buffer *LSB_,
-                          register_file *RF_, program_counter *PC_) {
+                          register_file *RF_, program_counter *PC_,
+                          decoder *Decoder_, predictor *PRE_) {
     RS = RS_;
     LSB = LSB_;
     RF = RF_;
     PC = PC_;
+    Decoder = Decoder_;
+    PRE = PRE_;
 }
 
-void reorder_buffer::execute() {
+void reorder_buffer::execute(bool &to_be_cleared, bool &to_be_finished) {
     launch();
-    commit();
-//////////////////////////////
+    commit(to_be_cleared, to_be_finished);
+    add_instruction();
 }
 
 void reorder_buffer::set_ready(int tag_, int data_) {
-    for (auto iter = buffer_next.begin(); iter != buffer_next.end(); ++iter) {
-        if (iter->tag == tag_) {
-            iter->imd = data_;
-            iter->ready = true;
-        }
-    }
+    reorder_buffer_unit &task = buffer_next.find(tag_);
+    task.imd = data_;
+    task.ready = true;
 }
 
 void reorder_buffer::flush() { buffer = buffer_next; }
+
+void reorder_buffer::clear() {
+    buffer.clear();
+    buffer_next.clear();
+}

@@ -1,4 +1,4 @@
-#include "../head_file/algorithm_logic_unit.h"
+#include "algorithm_logic_unit.h"
 
 bool base_ALU::is_free() { return free; }
 
@@ -24,10 +24,11 @@ int add_ALU::execute(int instruction, int operand_one, int operand_two) {
     switch (instruction) {
         case ADD:
         case ADDI:
-        case JALR:
             return operand_one + operand_two;
         case SUB:
             return operand_one - operand_two;
+        case JALR:
+            return (operand_one + operand_two) & (-2);
     }
 }
 
@@ -68,7 +69,7 @@ int compare_ALU::execute(int instruction, int operand_one, int operand_two) {
     }
 }
 
-int address_ALU::execute(int addr, int offset) {
+int address_ALU::execute(int addr, int offset, int useless) {
     --free;
     return addr + offset;
 }

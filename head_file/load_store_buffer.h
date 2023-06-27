@@ -2,8 +2,9 @@
 #define RISC_V_SIMULATOR_LOAD_STORE_BUFFER_H
 
 #include "memory.h"
-#include "reorder_buffer.h"
 #include "tool.h"
+
+class reorder_buffer;
 
 class load_store_buffer {
 private:
@@ -18,7 +19,7 @@ private:
     queue<load_store_unit, 64> buffer;//循环队列
     queue<load_store_unit, 64> buffer_next;//缓冲区
     int clock_time = 0;
-    memory *Memory;
+    memory *MEM;
     reorder_buffer *ROB;
 
     //内存读写进程
@@ -33,7 +34,7 @@ private:
 public:
 
     //初始化，关联相关模块
-    void init(memory *Memory_, reorder_buffer *ROB_);
+    void init(memory *MEM_, reorder_buffer *ROB_);
 
     //添加任务(占位，尚不可执行)
     void add_instruction(int tag_);
@@ -41,8 +42,14 @@ public:
     //上传数据(现可执行)
     void update_data(int instruction_, int value_one_, int value_two_, int tag_);
 
+    //队列是否为空
+    bool empty();
+
     //执行函数
     void execute();
+
+    //分支预测错误，清除所有的load指令和未ready的store指令，重整队列
+    void clear();
 
     //将缓冲区更新至当前状态
     void flush();

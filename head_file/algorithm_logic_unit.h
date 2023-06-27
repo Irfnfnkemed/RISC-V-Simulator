@@ -1,7 +1,7 @@
 #ifndef RISC_V_SIMULATOR_ALGORITHM_LOGIC_UNIT_H
 #define RISC_V_SIMULATOR_ALGORITHM_LOGIC_UNIT_H
 
-#include "../head_file/tool.h"
+#include "tool.h"
 
 class base_ALU {
 protected:
@@ -46,7 +46,7 @@ public:
 class address_ALU : public base_ALU {
 public:
     //计算地址
-    int execute(int addr, int offset);
+    int execute(int addr, int offset, int useless = 0);
 };
 
 class all_ALU {

@@ -14,11 +14,8 @@ public:
     //初始化
     void init();
 
-    //获得依赖关系
-    int get_depend(int reg_);
-
-    //获得寄存器的值
-    int get_value(int reg_);
+    //获得寄存器的依赖关系和值
+    void get(int reg_, int &depend_, int &value);
 
     //指令完成提交后，删除相关标记，并更新其值
     void flush_tag(int tag_, int data_);
@@ -26,8 +23,14 @@ public:
     //给reg_寄存器存标记
     void set_tag(int tag_, int reg_);
 
+    //得到a10的返回值
+    int get_return_value();
+
     //刷新
     void flush();
+
+    //分支预测错误，清除所有依赖关系
+    void clear();
 
 };
 

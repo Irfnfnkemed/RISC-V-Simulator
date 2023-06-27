@@ -1,6 +1,46 @@
-#include "../head_file/clock_control.h"
+#include "clock_control.h"
 
-void clock_control::init_set() {
-    Memory.init();
-    Load_store_buffer.init(&Memory);
+void clock_control::init() {
+    clock = 0;
+    to_be_cleared = to_be_finished = return_value = false;
+    MEM.init();
+    ROB.init(&RS, &LSB, &RF, &PC, &Decoder, &PRE);
+    RS.init(&ROB, &LSB);
+    LSB.init(&MEM, &ROB);
+    RF.init();
+    PC.init();
+    Decoder.init(&PC, &MEM, &PRE);
+    PRE.init();
 }
+
+void clock_control::execute() {
+    ROB.execute(to_be_cleared, to_be_finished);
+    RS.execute();
+    LSB.execute();
+    Decoder.execute();
+}
+
+void clock_control::flush() {
+    ++clock;
+    if (to_be_cleared) {
+        ROB.clear();
+        RS.clear();
+        LSB.clear();
+        RF.clear();
+        Decoder.clear();
+        to_be_cleared = false;
+    } else {
+        ROB.flush();
+        RS.flush();
+        LSB.flush();
+        RF.flush();
+        PC.flush();
+        Decoder.flush();
+        PRE.flush();
+        if (to_be_finished) {
+            if (LSB.empty()) { return_value = RF.get_return_value(); }
+        }
+    }
+}
+
+int clock_control::finish() { return return_value; }
