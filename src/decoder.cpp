@@ -44,7 +44,7 @@ void decoder::decode(int instr_bin, decode_instr &out) {
             out.reg_two = fetch(instr_bin, 24, 20);
             //分支指令，若预测跳转，dest置为现PC+1(offset为2的倍数)，跳转PC；反之，offset放在dest中
             out.dest = sign_extend((fetch(instr_bin, 11, 8) << 1) + (fetch(instr_bin, 30, 25) << 5) +
-                                   (((instr_bin >> 8) & 1) << 11) + (((instr_bin >> 31) & 1) << 12), 13);
+                                   (((instr_bin >> 7) & 1) << 11) + (((instr_bin >> 31) & 1) << 12), 13);
             if (PRE->jump()) {
                 PC->set_offset(out.dest);
                 out.dest = 1;
