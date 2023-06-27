@@ -8,6 +8,7 @@ private:
     int offset = 4;
     bool begin;//begin为真表示更新时直接将PC设为偏移量，反之PC加上偏移量
     bool stop = false;//PC是否停下
+    bool stop_next = false;//缓冲
 
 public:
     //初始化
@@ -27,6 +28,9 @@ public:
 
     //更新PC指向
     void flush();
+
+    //恢复PC正常状态
+    void clear();
 };
 
 #endif //RISC_V_SIMULATOR_PROGRAM_COUNTER_H

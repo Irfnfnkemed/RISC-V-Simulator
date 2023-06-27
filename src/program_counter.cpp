@@ -2,7 +2,7 @@
 
 void program_counter::init() {
     pc = 0;
-    stop = false;
+    stop = stop_next = false;
 }
 
 void program_counter::set_offset(int offset_, bool begin_) {
@@ -10,17 +10,26 @@ void program_counter::set_offset(int offset_, bool begin_) {
     begin = begin_;
 }
 
-bool program_counter::is_stop(){ return stop;}
+bool program_counter::is_stop() { return stop; }
 
 int program_counter::get_pc() { return pc; }
 
-void program_counter::set_stop(bool stop_) { stop = stop_; }
+void program_counter::set_stop(bool stop_) { stop_next = stop_; }
 
 void program_counter::flush() {
     if (!stop) {
         if (begin) { pc = offset; }
         else { pc += offset; }
-        offset = 4;
-        begin = false;
     }
+    offset = 4;
+    begin = false;
+    stop = stop_next;
+}
+
+void program_counter::clear() {
+    stop = stop_next = false;
+    if (begin) { pc = offset; }
+    else { pc += offset; }
+    offset = 4;
+    begin = false;
 }
