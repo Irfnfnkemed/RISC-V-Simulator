@@ -21,9 +21,18 @@ int logic_ALU::execute(int instruction, int operand_one, int operand_two) {
 
 int add_ALU::execute(int instruction, int operand_one, int operand_two) {
     --free;
+    int t;
     switch (instruction) {
         case ADD:
         case ADDI:
+        case LB:
+        case LH:
+        case LW:
+        case LBU:
+        case LHU:
+        case SB:
+        case SH:
+        case SW:
             return operand_one + operand_two;
         case SUB:
             return operand_one - operand_two;
@@ -37,13 +46,13 @@ int shift_ALU::execute(int instruction, int operand_one, int operand_two) {
     switch (instruction) {
         case SRL:
         case SRLI:
-            return operand_one >> (operand_two & 31);
+            return operand_one >> (operand_two & 63);
         case SRA:
         case SRAI:
-            return (unsigned(operand_one)) >> (operand_two & 31);
+            return (unsigned(operand_one)) >> (operand_two & 63);
         case SLL:
         case SLLI:
-            return operand_one >> (operand_two & 31);
+            return operand_one << (operand_two & 63);
     }
 }
 
@@ -87,6 +96,14 @@ int all_ALU::get_ALU_unit(int instruction) {
         case ADDI:
         case JALR:
         case SUB:
+        case LB:
+        case LH:
+        case LW:
+        case LBU:
+        case LHU:
+        case SB:
+        case SH:
+        case SW:
             return add;
         case SRL:
         case SRLI:
