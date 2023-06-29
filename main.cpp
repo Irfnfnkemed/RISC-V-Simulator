@@ -1,7 +1,7 @@
 #include "clock_control.h"
 
 int main() {
-    freopen("aaa", "r", stdin);
+    //freopen("aaa", "r", stdin);
     //freopen("sss", "w", stdout);
     clock_control a;
     a.init();
