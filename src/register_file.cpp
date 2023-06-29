@@ -50,7 +50,7 @@ void register_file::clear() {
 }
 
 void register_file::aaa() {
-    for (int i = 0; i < 32; ++i) {//'\n'
-        std::cout << i << ": " << std::hex << register_unit[i] << std::dec << ' ' << depend[i] << std::endl;
+    for (int i = 0; i < 32; ++i) {//'\n'<< ' ' << depend[i]
+        std::cout << i << ": " << std::hex << register_unit[i] << std::dec << std::endl;
     }
 }

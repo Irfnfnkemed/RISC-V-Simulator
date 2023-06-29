@@ -110,6 +110,10 @@ void reorder_buffer::add_instruction() {
         buffer_next.push(reorder_buffer_unit{buffer_next.get_index(), instr, reg_one, reg_two,
                                              imd, dest, false, false, pc});
     }
+    if (buffer.full()) {
+        PC->set_freeze();
+        Decoder->set_freeze();
+    }
 }
 
 void reorder_buffer::init(reservation_station *RS_, load_store_buffer *LSB_,

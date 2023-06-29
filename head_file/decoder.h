@@ -28,6 +28,7 @@ private:
 
     decode_instr instr_decode;//解码后指令
     decode_instr instr_decode_next;//缓冲区
+    bool freeze = false;
 
     //解码
     void decode(int instr_bin, decode_instr &out, bool &to_be_finished);
@@ -46,6 +47,9 @@ public:
 
     //获得解码后指令
     void fetch_instr(int &instr_, int &reg_one_, int &reg_two_, int &imd_, int &dest_, int &pc);
+
+    //设置为不变状态
+    void set_freeze();
 
     //刷新
     void flush();

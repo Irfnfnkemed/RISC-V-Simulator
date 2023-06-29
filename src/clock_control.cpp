@@ -43,10 +43,10 @@ void clock_control::flush() {
             if (LSB.empty()) { return_value = RF.get_return_value(); }
         }
     }
-    if (a) {
+//    if (a) {
 //        RF.aaa();///
-//        std::cout << "clock= " << clock<<"\n-----------------\n";
-    }
+//        std::cout << "clock= " <<clock<< "\n-----------------\n";
+//    }
     a = false;
 }
 
