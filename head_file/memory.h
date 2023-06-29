@@ -9,7 +9,7 @@
 class memory {
 private:
 
-    int memory_unit[32768];//用10进制存储16进制下的内存内容
+    int memory_unit[1000000];//用10进制存储16进制下的内存内容
 
 public:
 

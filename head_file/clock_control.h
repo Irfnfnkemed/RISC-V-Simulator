@@ -21,12 +21,14 @@ private:
     decoder Decoder;
     predictor PRE;
 
-    int clock = 0;
     bool to_be_cleared = false;
     bool to_be_finished = false;
     int return_value = -1;
 
+    bool a = false;
+
 public:
+    int clock = 0;
 
     //初始化
     void init();

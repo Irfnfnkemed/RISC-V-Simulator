@@ -2,12 +2,15 @@
 
 void program_counter::init() {
     pc = 0;
-    stop = stop_next = false;
+    stop = stop_next = clean = false;
 }
 
-void program_counter::set_offset(int offset_, bool begin_) {
-    offset = offset_;
-    begin = begin_;
+void program_counter::set_offset(int offset_, bool begin_, bool clean_) {
+    if (!clean) {
+        offset = offset_;
+        begin = begin_;
+        clean = clean_;
+    }
 }
 
 bool program_counter::is_stop() { return stop; }
@@ -27,7 +30,7 @@ void program_counter::flush() {
 }
 
 void program_counter::clear() {
-    stop = stop_next = false;
+    stop = stop_next = clean = false;
     if (begin) { pc = offset; }
     else { pc += offset; }
     offset = 4;

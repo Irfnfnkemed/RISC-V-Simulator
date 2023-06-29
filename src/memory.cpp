@@ -1,6 +1,7 @@
 #include "memory.h"
 
 void memory::init() {
+    for (int i = 0; i < 1000000; ++i) { memory_unit[i] = 0; }
     char source[10], tmp[10];
     unsigned int addr = 0;
     while (scanf("%s", source) != EOF) {

@@ -19,6 +19,8 @@ int sign_extend(int source, int digit);
 //得到指令的opcode(low--high位，0-based)，并转为十进制
 int fetch(int source, int high, int low);
 
+void aaa(int a);
+
 //可容纳size-1个元素的循环队列
 //为了取模方便，size应为2的次方
 template<class element, int size>
@@ -61,6 +63,7 @@ public:
         for (int i = obj.head; i != obj.tail; i = (++i) & mod) { Queue[i] = obj.Queue[i]; }
         head = obj.head;
         tail = obj.tail;
+        base = obj.base;
         return *this;
     }
 
@@ -71,7 +74,6 @@ public:
     void push(const element &new_element) {
         Queue[tail] = new_element;
         tail = (tail + 1) & mod;
-        if (tail == 0) { ++base; }
     }
 
     element pop() {
@@ -89,12 +91,18 @@ public:
     iterator end() { return iterator(this, tail); }
 
     //给出新加入队尾下标对应的tag
-    int get_index() { return tail + base * size; }
+    int get_index() {
+        if (tail == 0) { ++base; }
+        return tail + base * size;
+    }
 
     //按下标寻找
     element &find(int index) { return Queue[index & mod]; }
 
-    void clear() { head = tail = 0; }
+    void clear() {
+        head = tail = 0;
+        ++base;
+    }
 };
 
 

@@ -20,13 +20,16 @@ class reorder_buffer {
 private:
 
     struct reorder_buffer_unit {
-        int tag;//标签，用时钟数表示
-        int instr;
+        int tag;//标签
+        int instr = -1;
         int reg_one, reg_two;//两个寄存器的编号
         int imd;//用于存放立即数(以及RS/load_store_buffer返回的结果值)
         int dest;//目标寄存器的编号(若存在)
         bool launch = false;//是否发射
         bool ready = false;//可否提交
+
+
+        int pc;
     };
 
     address_ALU Address_ALU;
@@ -49,7 +52,7 @@ private:
     void launch();
 
     //提交指令
-    void commit(bool &to_be_cleared, bool &to_be_finished);
+    void commit(bool &to_be_cleared, bool &a);
 
     //从Decoder中获得一条指令
     void add_instruction();
@@ -61,7 +64,7 @@ public:
               decoder *Decoder_, predictor *PRE_);
 
     //执行
-    void execute(bool &to_be_cleared, bool &to_be_finished);
+    void execute(bool &to_be_cleared, bool &a);
 
     //将对应指令设为ready状态，将返回数据存到立即数中
     void set_ready(int tag_, int data_);

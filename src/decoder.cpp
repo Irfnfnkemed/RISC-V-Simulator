@@ -9,8 +9,14 @@ void decoder::init(program_counter *PC_, memory *MEM_, predictor *PRE_) {
     PRE = PRE_;
 }
 
-void decoder::decode(int instr_bin, decode_instr &out) {
-    if (instr_bin == 0x0ff00513) { out.instr = END; }
+void decoder::decode(int instr_bin, decode_instr &out, bool &to_be_finished) {
+    out.pc = PC->get_pc();
+    if (instr_bin == 0x0ff00513) {
+        out.instr = -1;
+        PC->set_stop(true);
+        to_be_finished = true;
+        return;
+    }
     switch (fetch(instr_bin, 6, 0)) {
         case 0b0110111:
             out.instr = LUI;
@@ -42,13 +48,13 @@ void decoder::decode(int instr_bin, decode_instr &out) {
         case 0b1100011:
             out.reg_one = fetch(instr_bin, 19, 15);
             out.reg_two = fetch(instr_bin, 24, 20);
-            //分支指令，若预测跳转，dest置为现PC+1(offset为2的倍数)，跳转PC；反之，offset放在dest中
+            //分支指令，若预测跳转，dest置为现PC+1(offset为2的倍数)，跳转PC；反之，dest置为PC+offset
             out.dest = sign_extend((fetch(instr_bin, 11, 8) << 1) + (fetch(instr_bin, 30, 25) << 5) +
                                    (((instr_bin >> 7) & 1) << 11) + (((instr_bin >> 31) & 1) << 12), 13);
             if (PRE->jump()) {
                 PC->set_offset(out.dest);
-                out.dest = 1;
-            }
+                out.dest = PC->get_pc() + 1;
+            } else { out.dest += PC->get_pc(); }
             switch (fetch(instr_bin, 14, 12)) {
                 case 0b000:
                     out.instr = BEQ;
@@ -173,16 +179,23 @@ void decoder::decode(int instr_bin, decode_instr &out) {
 
 bool decoder::is_send() { return instr_decode.instr == -1; }
 
-void decoder::execute() {
-    if (!PC->is_stop()) { decode(MEM->load_memory((PC->get_pc()), 4), instr_decode_next); }//读指令
+void decoder::execute(bool &to_be_finished) {
+    if (!PC->is_stop()) {
+        decode(MEM->load_memory((PC->get_pc()), 4), instr_decode_next, to_be_finished);
+//        std::cout << "PC=" << PC->get_pc() << ' ';
+//        aaa(instr_decode_next.instr);
+    }//读指令
 }
 
-void decoder::fetch_instr(int &instr_, int &reg_one_, int &reg_two_, int &imd_, int &dest_) {
+void decoder::fetch_instr(int &instr_, int &reg_one_, int &reg_two_, int &imd_, int &dest_, int &pc) {
     instr_ = instr_decode.instr;
     reg_one_ = instr_decode.reg_one;
     reg_two_ = instr_decode.reg_two;
     imd_ = instr_decode.imd;
     dest_ = instr_decode.dest;
+
+    ///////////////////
+    pc = instr_decode.pc;
     instr_decode.instr = -1;
 }
 

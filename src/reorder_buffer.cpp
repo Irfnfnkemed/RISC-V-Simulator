@@ -26,17 +26,18 @@ void reorder_buffer::launch() {//发射指令
     if (!buffer.empty()) {
         reorder_buffer_unit &task = buffer_next.back();
         if (!task.launch) {
+//            std::cout << "launch ";
+//            aaa(task.instr);
             task.launch = true;
             if (task.instr == END) {
                 task.ready = true;//可以直接提交
-
             } else if (task.instr == LUI) {
                 task.ready = true;//可以直接提交
             } else if (task.instr == AUIPC) {
                 task.imd = Address_ALU.execute(task.reg_two, task.imd);//原本reg_two存着PC
                 task.ready = true;//可以提交
             } else if (task.instr == JAL) {
-                task.reg_two = Address_ALU.execute(task.reg_two, 4);//用reg_two暂存PC+4
+                task.imd = Address_ALU.execute(task.reg_two, 4);//原本reg_two存着PC
                 task.ready = true;//可以提交
             } else if (task.instr == JALR) {
                 task.reg_two = Address_ALU.execute(task.reg_two, 4);//用reg_two暂存PC+4
@@ -63,41 +64,40 @@ void reorder_buffer::launch() {//发射指令
     }
 }
 
-void reorder_buffer::commit(bool &to_be_cleared, bool &to_be_finished) {
+void reorder_buffer::commit(bool &to_be_cleared, bool &a) {
     if (!buffer.empty() && buffer.front().ready) {
         reorder_buffer_unit &task = buffer_next.front();
-        if (task.instr == END) {
-            to_be_finished = true;//结束
-        } else if (task.instr >= SB && task.instr <= SW) {
-            int depend, value;
-            get(task.reg_two, depend, value);
-            LSB->update_data(task.instr, task.imd, value, task.tag);//返回到LSB中
+//        std::cout << "commit pc= " << std::hex << task.pc << std::dec << '\n';
+//        a = true;
+        ////aaa(task.instr);
+        if (task.instr >= SB && task.instr <= SW) {
+            LSB->update_data(task.instr, task.imd, RF->get(task.reg_two), task.tag);//返回到LSB中
         } else if (task.instr == JAL) {
-            RF->flush_tag(task.tag, task.reg_two);//reg_two暂存着PC+4
-            RS->flush_depend(task.tag, task.reg_two);//更新RS
+            RF->flush_tag(task.tag, task.imd, task.dest);//imd暂存着PC+4
+            if (task.dest > 0) { RS->flush_depend(task.tag, task.reg_two); }//更新RS
         } else if (task.instr == JALR) {
-            RF->flush_tag(task.tag, task.reg_two);//reg_two暂存着PC+4
-            RS->flush_depend(task.tag, task.reg_two);//更新RS
-            PC->set_offset(task.imd);
+            RF->flush_tag(task.tag, task.reg_two, task.dest);//reg_two暂存着PC+4
+            if (task.dest > 0) { RS->flush_depend(task.tag, task.reg_two); }//更新RS
+            PC->set_offset(task.imd, true);
             PC->set_stop(false);//重新开始读入
         } else if (task.instr >= BEQ && task.instr <= BGEU) {
             if (task.imd) {//跳转
                 if (task.dest & 1) { PRE->change_counter(true); }//预测正确
                 else {
                     PRE->change_counter(false);//预测错误
-                    PC->set_offset(task.dest);//跳转PC
+                    PC->set_offset(task.dest, true, true);//跳转PC
                     to_be_cleared = true;
                 }
             } else {//不跳转
                 if (task.dest & 1) {
                     PRE->change_counter(false);//预测错误
-                    PC->set_offset(task.dest + 3, false);//跳转PC
+                    PC->set_offset(task.dest + 3, true, true);//跳转PC
                     to_be_cleared = true;
                 } else { PRE->change_counter(true); }//预测正确
             }
         } else {
-            RF->flush_tag(task.tag, task.imd);
-            RS->flush_depend(task.tag, task.imd);
+            RF->flush_tag(task.tag, task.imd, task.dest);
+            if (task.dest != 0) { RS->flush_depend(task.tag, task.imd); }
         }
         buffer_next.pop();//删除队首
     }
@@ -105,10 +105,10 @@ void reorder_buffer::commit(bool &to_be_cleared, bool &to_be_finished) {
 
 void reorder_buffer::add_instruction() {
     if (!buffer.full() && !Decoder->is_send()) {
-        int instr, reg_one, reg_two, imd, dest;
-        Decoder->fetch_instr(instr, reg_one, reg_two, imd, dest);
+        int instr, reg_one, reg_two, imd, dest, pc;
+        Decoder->fetch_instr(instr, reg_one, reg_two, imd, dest, pc);
         buffer_next.push(reorder_buffer_unit{buffer_next.get_index(), instr, reg_one, reg_two,
-                                             imd, dest, false, false});
+                                             imd, dest, false, false, pc});
     }
 }
 
@@ -123,9 +123,9 @@ void reorder_buffer::init(reservation_station *RS_, load_store_buffer *LSB_,
     PRE = PRE_;
 }
 
-void reorder_buffer::execute(bool &to_be_cleared, bool &to_be_finished) {
+void reorder_buffer::execute(bool &to_be_cleared, bool &a) {
     launch();
-    commit(to_be_cleared, to_be_finished);
+    commit(to_be_cleared, a);
     add_instruction();
 }
 

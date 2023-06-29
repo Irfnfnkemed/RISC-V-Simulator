@@ -72,12 +72,14 @@ void load_store_buffer::execute() {
 }
 
 void load_store_buffer::clear() {
+    buffer.clear();
     for (auto iter = buffer_next.begin(); iter != buffer_next.end(); ++iter) {
         if (iter->instruction >= SB && iter->instruction <= SW && iter->ready) {
             buffer.push(*iter);
         }
     }
     buffer_next = buffer;
+    if (buffer.empty()) { clock_time = 0; }
 }
 
 void load_store_buffer::flush() { buffer = buffer_next; }

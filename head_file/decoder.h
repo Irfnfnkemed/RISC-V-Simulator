@@ -21,13 +21,17 @@ private:
         int reg_one = -1, reg_two = -1;//两个寄存器的编号
         int imd = -1;//用于存放立即数
         int dest = -1;//目标寄存器的编号(若存在)
+
+
+        int pc;
     };
 
     decode_instr instr_decode;//解码后指令
     decode_instr instr_decode_next;//缓冲区
 
     //解码
-    void decode(int instr_bin, decode_instr &out);
+    void decode(int instr_bin, decode_instr &out, bool &to_be_finished);
+
 
 public:
 
@@ -38,10 +42,10 @@ public:
     bool is_send();
 
     //执行
-    void execute();
+    void execute(bool &to_be_finished);
 
     //获得解码后指令
-    void fetch_instr(int &instr_, int &reg_one_, int &reg_two_, int &imd_, int &dest_);
+    void fetch_instr(int &instr_, int &reg_one_, int &reg_two_, int &imd_, int &dest_, int &pc);
 
     //刷新
     void flush();

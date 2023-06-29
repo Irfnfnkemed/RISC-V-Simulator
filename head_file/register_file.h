@@ -17,8 +17,11 @@ public:
     //获得寄存器的依赖关系和值
     void get(int reg_, int &depend_, int &value);
 
+    //获得目标寄存器的值（仅用于store的commit，不检查依赖关系）
+    int get(int reg_);
+
     //指令完成提交后，删除相关标记，并更新其值
-    void flush_tag(int tag_, int data_);
+    void flush_tag(int tag_, int data_, int reg_);
 
     //给reg_寄存器存标记
     void set_tag(int tag_, int reg_);
@@ -32,6 +35,8 @@ public:
     //分支预测错误，清除所有依赖关系
     void clear();
 
+
+    void aaa();
 };
 
 #endif //RISC_V_SIMULATOR_REGISTER_FILE_H

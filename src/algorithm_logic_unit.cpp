@@ -46,13 +46,13 @@ int shift_ALU::execute(int instruction, int operand_one, int operand_two) {
     switch (instruction) {
         case SRL:
         case SRLI:
-            return operand_one >> (operand_two & 63);
+            return (unsigned(operand_one)) >> (operand_two & 31);
         case SRA:
         case SRAI:
-            return (unsigned(operand_one)) >> (operand_two & 63);
+            return operand_one >> (operand_two & 31);
         case SLL:
         case SLLI:
-            return operand_one << (operand_two & 63);
+            return operand_one << (operand_two & 31);
     }
 }
 

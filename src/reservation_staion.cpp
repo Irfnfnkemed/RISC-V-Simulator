@@ -9,7 +9,7 @@ void reservation_station::calculate() {
                 (buffer[i].instr >= LB && buffer[i].instr <= SW) ||
                 (buffer[i].instr >= ADDI && buffer[i].instr <= SRAI)) {//有一个立即数的操作
                 if (ALU.is_free(buffer[i].instr) && buffer[i].depend_one == -1) {
-                    buffer_next[i].imd = ALU.execute(ADDI, buffer[i].value_one, buffer[i].imd);
+                    buffer_next[i].imd = ALU.execute(buffer[i].instr, buffer[i].value_one, buffer[i].imd);
                     return_to_ROB_or_LSB(buffer[i].instr, buffer[i].tag, buffer_next[i].imd);
                     buffer_next[i].instr = -1;//删去
                 }
