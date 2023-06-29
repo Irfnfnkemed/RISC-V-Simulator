@@ -48,14 +48,13 @@ public:
     //获得解码后指令
     void fetch_instr(int &instr_, int &reg_one_, int &reg_two_, int &imd_, int &dest_, int &pc);
 
-    //设置为不变状态
-    void set_freeze();
-
     //刷新
     void flush();
 
     //分支预测错误，清除所有的数据
     void clear();
+
+    void ppp();
 };
 
 

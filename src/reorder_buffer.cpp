@@ -111,8 +111,8 @@ void reorder_buffer::add_instruction() {
                                              imd, dest, false, false, pc});
     }
     if (buffer.full()) {
-        PC->set_freeze();
-        Decoder->set_freeze();
+        PC->ppp();
+        Decoder->ppp();
     }
 }
 

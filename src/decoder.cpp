@@ -199,13 +199,17 @@ void decoder::fetch_instr(int &instr_, int &reg_one_, int &reg_two_, int &imd_, 
     instr_decode.instr = -1;
 }
 
-void decoder::set_freeze() { freeze = true; }
-
 void decoder::flush() {
-    if (!freeze) {
+    if (freeze) { freeze = false; }
+    else {
         instr_decode = instr_decode_next;
         instr_decode_next.instr = -1;
-    } else { freeze = false; }
+    }
 }
 
-void decoder::clear() { instr_decode.instr = instr_decode_next.instr = -1; }
+void decoder::clear() {
+    instr_decode.instr = instr_decode_next.instr = -1;
+    freeze = false;
+}
+
+void decoder::ppp() { freeze = true; }

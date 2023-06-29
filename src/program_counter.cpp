@@ -13,8 +13,6 @@ void program_counter::set_offset(int offset_, bool begin_, bool clean_) {
     }
 }
 
-void program_counter::set_freeze() { freeze = true; }
-
 bool program_counter::is_stop() { return stop; }
 
 int program_counter::get_pc() { return pc; }
@@ -22,7 +20,8 @@ int program_counter::get_pc() { return pc; }
 void program_counter::set_stop(bool stop_) { stop_next = stop_; }
 
 void program_counter::flush() {
-    if (!freeze) {
+    if (freeze) { freeze = false; }
+    else {
         stop = stop_next;
         if (!stop) {
             if (begin) { pc = offset; }
@@ -30,7 +29,7 @@ void program_counter::flush() {
         }
         offset = 4;
         begin = false;
-    } else { freeze = false; }
+    }
 }
 
 void program_counter::clear() {
@@ -40,3 +39,5 @@ void program_counter::clear() {
     offset = 4;
     begin = freeze = false;
 }
+
+void program_counter::ppp() { freeze = true; }
