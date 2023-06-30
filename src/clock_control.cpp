@@ -118,3 +118,5 @@ void clock_control::flush() {
 bool clock_control::finish() { return return_value != -1; }
 
 int clock_control::get_return_value() { return return_value; }
+
+double clock_control::get_predictor_correct_rate() { return PRE.get_correct_rate(); }

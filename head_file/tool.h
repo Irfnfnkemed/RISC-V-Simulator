@@ -2,6 +2,7 @@
 #define RISC_V_SIMULATOR_TOOL_H
 
 #include <cstring>
+#include <cstdlib>
 
 enum INSTRUCTION {
     LUI, AUIPC, JAL, JALR, BEQ, BNE, BLT, BGE, BLTU, BGEU,

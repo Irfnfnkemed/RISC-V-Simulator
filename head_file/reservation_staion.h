@@ -12,7 +12,7 @@ class reservation_station {
 private:
 
     struct reservation_unit {
-        int instr = -1;//指令编号，为-1时表示该位置为空
+        u_int8_t instr = 0xff;//指令编号，为-1时表示该位置为空
         int value_one, value_two;//两个寄存器(若存在)的值
         int depend_one = -1, depend_two = -1;//两个寄存器(若存在)对前面指令的依赖关系，存储依赖指令的tag，无依赖时默认为-1
         int imd;//存放立即数(或者运算结果)
@@ -41,7 +41,7 @@ public:
     void flush_depend(int tag_, int output_);
 
     //添加任务
-    void add_instruction(int instr_, int value_one_, int value_two_,
+    void add_instruction(u_int8_t instr_, int value_one_, int value_two_,
                          int depend_one_, int depend_two_, int imd_, int tag_);
 
     //执行函数

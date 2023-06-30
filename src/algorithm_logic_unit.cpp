@@ -4,7 +4,7 @@ bool base_ALU::is_free() { return free; }
 
 void base_ALU::flush() { free = 2; }
 
-int logic_ALU::execute(int instruction, int operand_one, int operand_two) {
+int logic_ALU::execute(u_int8_t instruction, int operand_one, int operand_two) {
     --free;
     switch (instruction) {
         case AND:
@@ -19,7 +19,7 @@ int logic_ALU::execute(int instruction, int operand_one, int operand_two) {
     }
 }
 
-int add_ALU::execute(int instruction, int operand_one, int operand_two) {
+int add_ALU::execute(u_int8_t instruction, int operand_one, int operand_two) {
     --free;
     int t;
     switch (instruction) {
@@ -41,7 +41,7 @@ int add_ALU::execute(int instruction, int operand_one, int operand_two) {
     }
 }
 
-int shift_ALU::execute(int instruction, int operand_one, int operand_two) {
+int shift_ALU::execute(u_int8_t instruction, int operand_one, int operand_two) {
     --free;
     switch (instruction) {
         case SRL:
@@ -56,7 +56,7 @@ int shift_ALU::execute(int instruction, int operand_one, int operand_two) {
     }
 }
 
-int compare_ALU::execute(int instruction, int operand_one, int operand_two) {
+int compare_ALU::execute(u_int8_t instruction, int operand_one, int operand_two) {
     --free;
     switch (instruction) {
         case SLT:
@@ -78,12 +78,9 @@ int compare_ALU::execute(int instruction, int operand_one, int operand_two) {
     }
 }
 
-int address_ALU::execute(int addr, int offset, int useless) {
-    --free;
-    return addr + offset;
-}
+int address_ALU::execute(int addr, int offset) { return addr + offset; }
 
-int all_ALU::get_ALU_unit(int instruction) {
+int all_ALU::get_ALU_unit(u_int8_t instruction) {
     switch (instruction) {
         case AND:
         case ANDI:
@@ -126,7 +123,7 @@ int all_ALU::get_ALU_unit(int instruction) {
     }
 }
 
-bool all_ALU::is_free(int instruction) {
+bool all_ALU::is_free(u_int8_t instruction) {
     switch (get_ALU_unit(instruction)) {
         case logic:
             return Logic_ALU.is_free();
@@ -146,7 +143,7 @@ void all_ALU::flush() {
     Compare_ALU.flush();
 }
 
-int all_ALU::execute(int instruction, int operand_one, int operand_two) {
+int all_ALU::execute(u_int8_t instruction, int operand_one, int operand_two) {
     switch (get_ALU_unit(instruction)) {
         case logic:
             return Logic_ALU.execute(instruction, operand_one, operand_two);

@@ -17,10 +17,11 @@ private:
     predictor *PRE;
 
     struct decode_instr {
-        int instr = -1;//为-1时表示指令无效
-        int reg_one = -1, reg_two = -1;//两个寄存器的编号
+        u_int8_t instr = 0xff;//为0xff时表示指令无效
+        u_int8_t reg_one = 0xff, reg_two = 0xff;//两个寄存器的编号
         int imd = -1;//用于存放立即数
-        int dest = -1;//目标寄存器的编号(若存在)
+        u_int8_t dest = 0xff;//目标寄存器的编号(若存在)
+        int other;//存放其他数
     };
 
     decode_instr instr_decode;//解码后指令
@@ -43,7 +44,8 @@ public:
     void execute(bool &to_be_finished);
 
     //获得解码后指令
-    void fetch_instr(int &instr_, int &reg_one_, int &reg_two_, int &imd_, int &dest_, int &pc);
+    void fetch_instr(u_int8_t &instr_, u_int8_t &reg_one_, u_int8_t &reg_two_,
+                     int &imd_, u_int8_t &dest_, int &other);
 
     //设置为不变状态
     void set_freeze();

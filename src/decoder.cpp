@@ -11,7 +11,7 @@ void decoder::init(program_counter *PC_, memory *MEM_, predictor *PRE_) {
 
 void decoder::decode(int instr_bin, decode_instr &out, bool &to_be_finished) {
     if (instr_bin == 0x0ff00513) {
-        out.instr = -1;
+        out.instr = 0xff;
         PC->set_stop(true);
         to_be_finished = true;
         return;
@@ -19,18 +19,18 @@ void decoder::decode(int instr_bin, decode_instr &out, bool &to_be_finished) {
     switch (fetch(instr_bin, 6, 0)) {
         case 0b0110111:
             out.instr = LUI;
-            out.imd = fetch(instr_bin, 31, 12) << 12;
+            out.other = fetch(instr_bin, 31, 12) << 12;
             out.dest = fetch(instr_bin, 11, 7);
             return;
         case 0b0010111:
             out.instr = AUIPC;
-            out.reg_two = PC->get_pc();
+            out.other = PC->get_pc();
             out.imd = fetch(instr_bin, 31, 12) << 12;
             out.dest = fetch(instr_bin, 11, 7);
             return;
         case 0b1101111:
             out.instr = JAL;
-            out.reg_two = PC->get_pc();
+            out.other = PC->get_pc();
             out.imd = sign_extend((fetch(instr_bin, 30, 21) << 1) + (((instr_bin >> 20) & 1) << 11) +
                                   (fetch(instr_bin, 19, 12) << 12) + (((instr_bin >> 31) & 1) << 20), 21);
             out.dest = fetch(instr_bin, 11, 7);
@@ -39,21 +39,21 @@ void decoder::decode(int instr_bin, decode_instr &out, bool &to_be_finished) {
         case 0b1100111:
             out.instr = JALR;
             out.reg_one = fetch(instr_bin, 19, 15);
-            out.reg_two = PC->get_pc();
-            out.imd = sign_extend(fetch(instr_bin, 31, 20), 12);
+            out.imd = PC->get_pc();//此处与其他指令不同，imd存PC，other存立即数
+            out.other = sign_extend(fetch(instr_bin, 31, 20), 12);
             out.dest = fetch(instr_bin, 11, 7);
             PC->set_stop(true);
             return;
         case 0b1100011:
             out.reg_one = fetch(instr_bin, 19, 15);
             out.reg_two = fetch(instr_bin, 24, 20);
-            //分支指令，若预测跳转，dest置为现PC+1(offset为2的倍数)，跳转PC；反之，dest置为PC+offset
-            out.dest = sign_extend((fetch(instr_bin, 11, 8) << 1) + (fetch(instr_bin, 30, 25) << 5) +
-                                   (((instr_bin >> 7) & 1) << 11) + (((instr_bin >> 31) & 1) << 12), 13);
+            //分支指令，若预测跳转，imd置为现PC+1(offset为2的倍数)，跳转PC；反之，imd置为PC+offset
+            out.imd = sign_extend((fetch(instr_bin, 11, 8) << 1) + (fetch(instr_bin, 30, 25) << 5) +
+                                  (((instr_bin >> 7) & 1) << 11) + (((instr_bin >> 31) & 1) << 12), 13);
             if (PRE->jump()) {
-                PC->set_offset(out.dest);
-                out.dest = PC->get_pc() + 1;
-            } else { out.dest += PC->get_pc(); }
+                PC->set_offset(out.imd);
+                out.imd = PC->get_pc() + 1;
+            } else { out.imd += PC->get_pc(); }
             switch (fetch(instr_bin, 14, 12)) {
                 case 0b000:
                     out.instr = BEQ;
@@ -176,7 +176,7 @@ void decoder::decode(int instr_bin, decode_instr &out, bool &to_be_finished) {
     }
 }
 
-bool decoder::is_send() { return instr_decode.instr == -1; }
+bool decoder::is_send() { return instr_decode.instr == 0xff; }
 
 void decoder::execute(bool &to_be_finished) {
     if (!PC->is_stop()) {//读指令
@@ -184,13 +184,15 @@ void decoder::execute(bool &to_be_finished) {
     }
 }
 
-void decoder::fetch_instr(int &instr_, int &reg_one_, int &reg_two_, int &imd_, int &dest_, int &pc) {
+void decoder::fetch_instr(u_int8_t &instr_, u_int8_t &reg_one_, u_int8_t &reg_two_,
+                          int &imd_, u_int8_t &dest_, int &other) {
     instr_ = instr_decode.instr;
     reg_one_ = instr_decode.reg_one;
     reg_two_ = instr_decode.reg_two;
     imd_ = instr_decode.imd;
     dest_ = instr_decode.dest;
-    instr_decode.instr = -1;
+    other = instr_decode.other;
+    instr_decode.instr = 0xff;
 }
 
 void decoder::set_freeze() { freeze = true; }
@@ -199,11 +201,11 @@ void decoder::flush() {
     if (freeze) { freeze = false; }
     else {
         instr_decode = instr_decode_next;
-        instr_decode_next.instr = -1;
+        instr_decode_next.instr = 0xff;
     }
 }
 
 void decoder::clear() {
-    instr_decode.instr = instr_decode_next.instr = -1;
+    instr_decode.instr = instr_decode_next.instr = 0xff;
     freeze = false;
 }

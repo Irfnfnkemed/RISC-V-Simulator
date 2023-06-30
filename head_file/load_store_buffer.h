@@ -10,7 +10,7 @@ class load_store_buffer {
 private:
 
     struct load_store_unit {
-        int instruction = -1;//load_store_buffer相关的指令编号，空时为-1
+        u_int8_t instruction = 0xff;//load_store_buffer相关的指令编号，空时为-1
         int value_one, value_two;//两个相关寄存器的值
         int tag;//读写指令在ROB中对应的tag
         bool ready = false;
@@ -40,7 +40,7 @@ public:
     void add_instruction(int tag_);
 
     //上传数据(现可执行)
-    void update_data(int instruction_, int value_one_, int value_two_, int tag_);
+    void update_data(u_int8_t instruction_, int value_one_, int value_two_, int tag_);
 
     //队列是否为空
     bool empty();

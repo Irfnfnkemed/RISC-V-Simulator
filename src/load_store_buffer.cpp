@@ -53,7 +53,7 @@ void load_store_buffer::add_instruction(int tag_) {
     buffer_next.push(load_store_unit{1, 0, 0, tag_, false});
 }
 
-void load_store_buffer::update_data(int instruction_, int value_one_, int value_two_, int tag_) {
+void load_store_buffer::update_data(u_int8_t instruction_, int value_one_, int value_two_, int tag_) {
     for (auto iter = buffer_next.begin(); iter != buffer_next.end(); ++iter) {
         if (iter->tag == tag_) {
             iter->instruction = instruction_;

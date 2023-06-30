@@ -7,22 +7,22 @@ void register_file::init() {
     }
 }
 
-void register_file::get(int reg_, int &depend_, int &value) {
+void register_file::get(u_int8_t reg_, int &depend_, int &value) {
     depend_ = depend[reg_];
     if (depend_ == -1) { value = register_unit[reg_]; }
     else { value = -1; }
 }
 
-int register_file::get(int reg_) { return register_unit[reg_]; }
+int register_file::get(u_int8_t reg_) { return register_unit[reg_]; }
 
-void register_file::flush_tag(int tag_, int data_, int reg_) {
+void register_file::flush_tag(int tag_, int data_, u_int8_t reg_) {
     if (reg_ > 0) {
         register_unit_next[reg_] = data_;
         if (depend[reg_] == tag_ && depend_next[reg_] == tag_) { depend_next[reg_] = -1; }
     }
 }
 
-void register_file::set_tag(int tag_, int reg_) {
+void register_file::set_tag(int tag_, u_int8_t reg_) {
     depend_next[reg_] = tag_;
 }
 

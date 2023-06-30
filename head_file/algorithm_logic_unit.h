@@ -14,39 +14,39 @@ public:
     void flush();
 
     //设置操作名和操作数，对ALU指令进行操作，并输出结果
-    virtual int execute(int instruction, int operand_one, int operand_two) = 0;
+    virtual int execute(u_int8_t instruction, int operand_one, int operand_two) = 0;
 };
 
 
 //逻辑运算
 class logic_ALU : public base_ALU {
 public:
-    int execute(int instruction, int operand_one, int operand_two);
+    int execute(u_int8_t instruction, int operand_one, int operand_two);
 };
 
 //算术运算
 class add_ALU : public base_ALU {
 public:
-    int execute(int instruction, int operand_one, int operand_two);
+    int execute(u_int8_t instruction, int operand_one, int operand_two);
 };
 
 //位运算
 class shift_ALU : public base_ALU {
 public:
-    int execute(int instruction, int operand_one, int operand_two);
+    int execute(u_int8_t instruction, int operand_one, int operand_two);
 };
 
 //比较运算
 class compare_ALU : public base_ALU {
 public:
-    int execute(int instruction, int operand_one, int operand_two);
+    int execute(u_int8_t instruction, int operand_one, int operand_two);
 };
 
 
-class address_ALU : public base_ALU {
+class address_ALU {
 public:
     //计算地址
-    int execute(int addr, int offset, int useless = 0);
+    int execute(int addr, int offset);
 };
 
 class all_ALU {
@@ -61,14 +61,14 @@ private:
     compare_ALU Compare_ALU;
 
     //得到对应ALU的种类
-    int get_ALU_unit(int instruction);
+    int get_ALU_unit(u_int8_t instruction);
 
 public:
-    bool is_free(int instruction);
+    bool is_free(u_int8_t instruction);
 
     void flush();
 
-    int execute(int instruction, int operand_one, int operand_two);
+    int execute(u_int8_t instruction, int operand_one, int operand_two);
 };
 
 #endif //RISC_V_SIMULATOR_ALGORITHM_LOGIC_UNIT_H

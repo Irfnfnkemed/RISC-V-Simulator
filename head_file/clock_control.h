@@ -24,9 +24,9 @@ private:
     bool to_be_cleared = false;
     bool to_be_finished = false;
     int return_value = -1;
+    int clock = 0;
 
 public:
-    int clock = 0;
 
     //初始化
     void init();
@@ -42,6 +42,9 @@ public:
 
     //返回程序结束值
     int get_return_value();
+
+    //得到分支预测正确率
+    double get_predictor_correct_rate();
 
 };
 

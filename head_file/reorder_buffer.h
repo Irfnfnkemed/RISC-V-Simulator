@@ -2,7 +2,6 @@
 #define RISC_V_SIMULATOR_REORDER_BUFFER_H
 
 #include "algorithm_logic_unit.h"
-#include "tool.h"
 
 class reservation_station;
 
@@ -21,13 +20,15 @@ private:
 
     struct reorder_buffer_unit {
         int tag;//标签
-        int instr = -1;
-        int reg_one, reg_two;//两个寄存器的编号
+        u_int8_t instr = 0xff;
+        u_int8_t reg_one, reg_two;//两个寄存器的编号
         int imd;//用于存放立即数(以及RS/load_store_buffer返回的结果值)
-        int dest;//目标寄存器的编号(若存在)
+        u_int8_t dest;//目标寄存器的编号(若存在)
+        int output;//从RS/address_ALU返回的值
         bool launch = false;//是否发射
         bool ready = false;//可否提交
     };
+
 
     address_ALU Address_ALU;
     reservation_station *RS;
@@ -40,10 +41,10 @@ private:
     queue<reorder_buffer_unit, 16> buffer_next;//缓存
 
     //在RF中添加标记
-    void set_tag(int instr_, int tag_, int dest_);
+    void set_tag(u_int8_t instr_, int tag_, u_int8_t dest_);
 
     //得到依赖关系和数据
-    void get(int reg_, int &depend_, int &value_);
+    void get(u_int8_t reg_, int &depend_, int &value_);
 
     //发射指令
     void launch();
