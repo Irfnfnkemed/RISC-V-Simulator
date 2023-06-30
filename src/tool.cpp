@@ -28,7 +28,6 @@ int fetch(int source, int high, int low) {
 }
 
 int shuffle(int order[], int length) {
-    srand(time(nullptr));
     for (int i = 0; i < length; ++i) { order[i] = i + 1; }
     std::random_shuffle(order, order + length);
 }
