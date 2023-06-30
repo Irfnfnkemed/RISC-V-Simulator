@@ -13,10 +13,10 @@ private:
 
     struct reservation_unit {
         u_int8_t instr = 0xff;//指令编号，为-1时表示该位置为空
-        int value_one, value_two;//两个寄存器(若存在)的值
+        int value_one = -1, value_two = -1;//两个寄存器(若存在)的值
         int depend_one = -1, depend_two = -1;//两个寄存器(若存在)对前面指令的依赖关系，存储依赖指令的tag，无依赖时默认为-1
-        int imd;//存放立即数(或者运算结果)
-        int tag;//指令在ROB中的tag
+        int imd = -1;//存放立即数(或者运算结果)
+        int tag = -1;//指令在ROB中的tag
     };
 
     all_ALU ALU;

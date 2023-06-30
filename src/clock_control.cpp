@@ -83,9 +83,9 @@ void clock_control::flush() {
         }
         to_be_cleared = false;
     } else {
-        int order[7];
-        shuffle(order, 7);
-        for (int i = 0; i < 7; ++i) {
+        int order[6];
+        shuffle(order, 6);
+        for (int i = 0; i < 6; ++i) {
             switch (order[i]) {
                 case 1:
                     ROB.flush();
@@ -105,8 +105,6 @@ void clock_control::flush() {
                 case 6:
                     Decoder.flush();
                     break;
-                case 7:
-                    PRE.flush();
             }
         }
         if (to_be_finished) {

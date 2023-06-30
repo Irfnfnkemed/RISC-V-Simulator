@@ -10,6 +10,7 @@ private:
     int depend[32];//存储依赖的指令在ROB中的tag，无关系时为-1
     int register_unit_next[32];//缓冲区
     int depend_next[32];//缓冲区
+    bool modify[32];//是否添加了新的tag，每周期更新
 
 public:
 

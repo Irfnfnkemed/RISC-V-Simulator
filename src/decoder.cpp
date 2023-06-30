@@ -1,6 +1,5 @@
 #include "decoder.h"
 #include "program_counter.h"
-#include "reorder_buffer.h"
 #include "predictor.h"
 
 void decoder::init(program_counter *PC_, memory *MEM_, predictor *PRE_) {

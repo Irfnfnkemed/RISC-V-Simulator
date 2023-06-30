@@ -7,7 +7,6 @@ class predictor {
 private:
     //两位计数器，二进制下，10、11跳转，00、01不跳
     u_int_2 counter[256];
-    u_int_2 counter_next[256];
     int correct = 0;//正确次数
     int incorrect = 0;//错误次数
 public:
@@ -22,9 +21,6 @@ public:
 
     //得到预测正确率
     double get_correct_rate() const;
-
-    //刷新
-    void flush();
 };
 
 
