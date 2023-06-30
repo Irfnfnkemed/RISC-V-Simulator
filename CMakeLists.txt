@@ -3,6 +3,6 @@ project(RISC_V_Simulator)
 
 set(CMAKE_CXX_STANDARD 14)
 
-include_directories(src head_file)
+include_directories(src include)
 
-add_executable(code src/memory.cpp head_file/memory.h src/tool.cpp head_file/tool.h src/algorithm_logic_unit.cpp "head_file/algorithm_logic_unit.h" src/load_store_buffer.cpp head_file/load_store_buffer.h src/clock_control.cpp head_file/clock_control.h "src/reservation_staion.cpp" "head_file/reservation_staion.h" src/reorder_buffer.cpp src/register_file.cpp head_file/register_file.h src/program_counter.cpp head_file/program_counter.h head_file/reorder_buffer.h src/decoder.cpp head_file/decoder.h src/predictor.cpp head_file/predictor.h main.cpp)
+add_executable(code src/memory.cpp include/memory.h src/tool.cpp include/tool.h src/algorithm_logic_unit.cpp "include/algorithm_logic_unit.h" src/load_store_buffer.cpp include/load_store_buffer.h src/clock_control.cpp include/clock_control.h "src/reservation_staion.cpp" "include/reservation_staion.h" src/reorder_buffer.cpp src/register_file.cpp include/register_file.h src/program_counter.cpp include/program_counter.h include/reorder_buffer.h src/decoder.cpp include/decoder.h src/predictor.cpp include/predictor.h main.cpp)
