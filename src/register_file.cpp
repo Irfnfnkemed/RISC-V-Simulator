@@ -1,5 +1,4 @@
 #include "register_file.h"
-#include <iostream>
 
 void register_file::init() {
     for (int i = 0; i < 32; ++i) {
@@ -46,11 +45,5 @@ void register_file::clear() {
     for (int i = 1; i < 32; ++i) {
         register_unit[i] = register_unit_next[i];
         depend[i] = depend_next[i] = -1;
-    }
-}
-
-void register_file::aaa() {
-    for (int i = 0; i < 32; ++i) {//'\n'<< ' ' << depend[i]
-        std::cout << i << ": " << std::hex << register_unit[i] << std::dec << std::endl;
     }
 }

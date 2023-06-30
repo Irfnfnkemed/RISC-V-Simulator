@@ -10,7 +10,7 @@ private:
     bool clean = false;//周期末程序是否会清空
     bool stop = false;//PC是否停下
     bool stop_next = false;//缓冲
-    bool freeze = false;
+    bool freeze = false;//ROB已满，PC及Decoder保持不变
 
 public:
     //初始化
@@ -18,6 +18,9 @@ public:
 
     //设置偏移量(begin_为真表示直接赋为offset，反之+=offset)(clean_为真表示周期末程序会清空)
     void set_offset(int offset_, bool begin_ = false, bool clean_ = false);
+
+    //ROB已满，设置PC及Decoder保持不变
+    void set_freeze();
 
     //是否停下
     bool is_stop();
@@ -33,8 +36,6 @@ public:
 
     //恢复PC正常状态
     void clear();
-
-    void ppp();
 };
 
 #endif //RISC_V_SIMULATOR_PROGRAM_COUNTER_H

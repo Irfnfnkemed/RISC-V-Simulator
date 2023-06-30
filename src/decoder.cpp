@@ -10,7 +10,6 @@ void decoder::init(program_counter *PC_, memory *MEM_, predictor *PRE_) {
 }
 
 void decoder::decode(int instr_bin, decode_instr &out, bool &to_be_finished) {
-    out.pc = PC->get_pc();
     if (instr_bin == 0x0ff00513) {
         out.instr = -1;
         PC->set_stop(true);
@@ -180,11 +179,9 @@ void decoder::decode(int instr_bin, decode_instr &out, bool &to_be_finished) {
 bool decoder::is_send() { return instr_decode.instr == -1; }
 
 void decoder::execute(bool &to_be_finished) {
-    if (!PC->is_stop()) {
+    if (!PC->is_stop()) {//读指令
         decode(MEM->load_memory((PC->get_pc()), 4), instr_decode_next, to_be_finished);
-//        std::cout << "PC=" << PC->get_pc() << ' ';
-//        aaa(instr_decode_next.instr);
-    }//读指令
+    }
 }
 
 void decoder::fetch_instr(int &instr_, int &reg_one_, int &reg_two_, int &imd_, int &dest_, int &pc) {
@@ -193,11 +190,10 @@ void decoder::fetch_instr(int &instr_, int &reg_one_, int &reg_two_, int &imd_, 
     reg_two_ = instr_decode.reg_two;
     imd_ = instr_decode.imd;
     dest_ = instr_decode.dest;
-
-    ///////////////////
-    pc = instr_decode.pc;
     instr_decode.instr = -1;
 }
+
+void decoder::set_freeze() { freeze = true; }
 
 void decoder::flush() {
     if (freeze) { freeze = false; }
@@ -211,5 +207,3 @@ void decoder::clear() {
     instr_decode.instr = instr_decode_next.instr = -1;
     freeze = false;
 }
-
-void decoder::ppp() { freeze = true; }

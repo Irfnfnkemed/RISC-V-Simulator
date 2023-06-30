@@ -1,15 +1,12 @@
 #include "clock_control.h"
 
 int main() {
-    //freopen("aaa", "r", stdin);
-    //freopen("sss", "w", stdout);
-    clock_control a;
-    a.init();
-    while (a.finish() == -1) {
-//        std::cout << "-----------------\n" << a.clock << ":\n";
-        a.execute();
-        a.flush();
+    clock_control RISCV;
+    RISCV.init();
+    while (!RISCV.finish()) {
+        RISCV.execute();
+        RISCV.flush();
     }
-    std::cout << std::dec << a.finish() << std::endl;
+    std::cout << std::dec << RISCV.get_return_value() << std::endl;
     return 0;
 }

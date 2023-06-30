@@ -1,5 +1,6 @@
 #include "tool.h"
 #include <iostream>
+#include <algorithm>
 
 int hex_to_dec(const char source[], int digit) {
     int dec_number = 0;
@@ -24,8 +25,13 @@ int fetch(int source, int high, int low) {
     return (source >> low) & fetch_num;
 }
 
-void aaa(int a) {
-    switch (a) {
+int shuffle(int order[], int length) {
+    for (int i = 0; i < length; ++i) { order[i] = i + 1; }
+    std::random_shuffle(order, order + length);
+}
+
+void print_the_instruction(int instruction) {
+    switch (instruction) {
         case LUI:
             std::cout << "LUI" << std::endl;
             break;

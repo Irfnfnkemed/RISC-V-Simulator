@@ -15,6 +15,8 @@ void program_counter::set_offset(int offset_, bool begin_, bool clean_) {
 
 bool program_counter::is_stop() { return stop; }
 
+void program_counter::set_freeze() { freeze = true; }
+
 int program_counter::get_pc() { return pc; }
 
 void program_counter::set_stop(bool stop_) { stop_next = stop_; }
@@ -39,5 +41,3 @@ void program_counter::clear() {
     offset = 4;
     begin = freeze = false;
 }
-
-void program_counter::ppp() { freeze = true; }

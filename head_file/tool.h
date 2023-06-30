@@ -19,7 +19,11 @@ int sign_extend(int source, int digit);
 //得到指令的opcode(low--high位，0-based)，并转为十进制
 int fetch(int source, int high, int low);
 
-void aaa(int a);
+//将长度为length、编号为1~length的order序列打乱
+int shuffle(int order[], int length);
+
+//输出程序编号对应的指令名(调试用)
+void print_the_instruction(int instruction);
 
 //可容纳size-1个元素的循环队列
 //为了取模方便，size应为2的次方

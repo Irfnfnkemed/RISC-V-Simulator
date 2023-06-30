@@ -21,14 +21,11 @@ private:
         int reg_one = -1, reg_two = -1;//两个寄存器的编号
         int imd = -1;//用于存放立即数
         int dest = -1;//目标寄存器的编号(若存在)
-
-
-        int pc;
     };
 
     decode_instr instr_decode;//解码后指令
     decode_instr instr_decode_next;//缓冲区
-    bool freeze = false;
+    bool freeze = false;//为真时，设置为不变状态(持续一个周期)
 
     //解码
     void decode(int instr_bin, decode_instr &out, bool &to_be_finished);
@@ -48,13 +45,14 @@ public:
     //获得解码后指令
     void fetch_instr(int &instr_, int &reg_one_, int &reg_two_, int &imd_, int &dest_, int &pc);
 
+    //设置为不变状态
+    void set_freeze();
+
     //刷新
     void flush();
 
     //分支预测错误，清除所有的数据
     void clear();
-
-    void ppp();
 };
 
 

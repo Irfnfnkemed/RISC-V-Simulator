@@ -34,9 +34,6 @@ public:
 
     //分支预测错误，清除所有依赖关系
     void clear();
-
-
-    void aaa();
 };
 
 #endif //RISC_V_SIMULATOR_REGISTER_FILE_H

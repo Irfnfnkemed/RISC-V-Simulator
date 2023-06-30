@@ -25,8 +25,6 @@ private:
     bool to_be_finished = false;
     int return_value = -1;
 
-    bool a = false;
-
 public:
     int clock = 0;
 
@@ -39,8 +37,11 @@ public:
     //刷新
     void flush();
 
-    //程序未结束，返回-1；反之，返回结束值
-    int finish();
+    //程序是否结束
+    bool finish();
+
+    //返回程序结束值
+    int get_return_value();
 
 };
 

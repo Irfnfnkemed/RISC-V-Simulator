@@ -26,8 +26,6 @@ void reorder_buffer::launch() {//发射指令
     if (!buffer.empty()) {
         reorder_buffer_unit &task = buffer_next.back();
         if (!task.launch) {
-//            std::cout << "launch ";
-//            aaa(task.instr);
             task.launch = true;
             if (task.instr == END) {
                 task.ready = true;//可以直接提交
@@ -64,12 +62,9 @@ void reorder_buffer::launch() {//发射指令
     }
 }
 
-void reorder_buffer::commit(bool &to_be_cleared, bool &a) {
+void reorder_buffer::commit(bool &to_be_cleared) {
     if (!buffer.empty() && buffer.front().ready) {
         reorder_buffer_unit &task = buffer_next.front();
-//        std::cout << "commit pc= " << std::hex << task.pc << std::dec << '\n';
-//        a = true;
-        ////aaa(task.instr);
         if (task.instr >= SB && task.instr <= SW) {
             LSB->update_data(task.instr, task.imd, RF->get(task.reg_two), task.tag);//返回到LSB中
         } else if (task.instr == JAL) {
@@ -108,11 +103,11 @@ void reorder_buffer::add_instruction() {
         int instr, reg_one, reg_two, imd, dest, pc;
         Decoder->fetch_instr(instr, reg_one, reg_two, imd, dest, pc);
         buffer_next.push(reorder_buffer_unit{buffer_next.get_index(), instr, reg_one, reg_two,
-                                             imd, dest, false, false, pc});
+                                             imd, dest, false, false});
     }
-    if (buffer.full()) {
-        PC->ppp();
-        Decoder->ppp();
+    if (buffer.full()) {//已满，设置PC、Decoder一周期内不变
+        PC->set_freeze();
+        Decoder->set_freeze();
     }
 }
 
@@ -127,9 +122,9 @@ void reorder_buffer::init(reservation_station *RS_, load_store_buffer *LSB_,
     PRE = PRE_;
 }
 
-void reorder_buffer::execute(bool &to_be_cleared, bool &a) {
+void reorder_buffer::execute(bool &to_be_cleared) {
     launch();
-    commit(to_be_cleared, a);
+    commit(to_be_cleared);
     add_instruction();
 }
 
