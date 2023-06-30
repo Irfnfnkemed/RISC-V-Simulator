@@ -8,19 +8,19 @@ void load_store_buffer::load_store_memory() {
             load_store_unit task = buffer_next.pop();
             switch (task.instruction) {
                 case LB:
-                    task.value_two = sign_extend(MEM->load_memory(task.value_one, 1), 8);
+                    task.value_two = MEM->load_memory(task.value_one, 1);
                     break;
                 case LH:
-                    task.value_two = sign_extend(MEM->load_memory(task.value_one, 2), 16);
+                    task.value_two = MEM->load_memory(task.value_one, 2);
                     break;
                 case LW:
                     task.value_two = MEM->load_memory(task.value_one, 4);
                     break;
                 case LBU:
-                    task.value_two = MEM->load_memory(task.value_one, 1);
+                    task.value_two = MEM->load_memory(task.value_one, 1, false);
                     break;
                 case LHU:
-                    task.value_two = MEM->load_memory(task.value_one, 2);
+                    task.value_two = MEM->load_memory(task.value_one, 2, false);
                     break;
                 case SB:
                     MEM->store_memory(task.value_one, task.value_two, 1);

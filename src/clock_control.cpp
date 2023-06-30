@@ -44,8 +44,8 @@ void clock_control::flush() {
         }
     }
 //    if (a) {
-//       // RF.aaa();///
-//        std::cout << "clock= " << clock<<"\n-----------------\n";
+//        RF.aaa();///
+//        std::cout << "clock= " << clock << "\n-----------------\n";
 //    }
     a = false;
 }
