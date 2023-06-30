@@ -110,5 +110,26 @@ public:
     }
 };
 
+//实现2bit的数据类型
+class u_int_2 {
+private:
+    bool num[2];
+public:
+    //构造函数
+    u_int_2(bool num_high = false, bool num_low = false);
+
+    //自增，若溢出则忽略操作
+    u_int_2 &operator++();
+
+    //自减，若溢出则忽略操作
+    u_int_2 &operator--();
+
+    //赋值
+    u_int_2 &operator=(u_int_2 const &obj);
+
+    //给出高位
+    bool fetch_high() const;
+};
+
 
 #endif //RISC_V_SIMULATOR_TOOL_H

@@ -77,18 +77,18 @@ void reorder_buffer::commit(bool &to_be_cleared) {
             PC->set_stop(false);//重新开始读入
         } else if (task.instr >= BEQ && task.instr <= BGEU) {
             if (task.output) {//跳转
-                if (task.imd & 1) { PRE->change_counter(true, true); }//预测正确
+                if (task.imd & 1) { PRE->change_counter(task.dest, true, true); }//预测正确
                 else {
-                    PRE->change_counter(true, false);//预测错误
+                    PRE->change_counter(task.dest, true, false);//预测错误
                     PC->set_offset(task.imd, true, true);//跳转PC
                     to_be_cleared = true;
                 }
             } else {//不跳转
                 if (task.imd & 1) {
-                    PRE->change_counter(false, false);//预测错误
+                    PRE->change_counter(task.dest, false, false);//预测错误
                     PC->set_offset(task.imd + 3, true, true);//跳转PC
                     to_be_cleared = true;
-                } else { PRE->change_counter(false, true); }//预测正确
+                } else { PRE->change_counter(task.dest, false, true); }//预测正确
             }
         } else {
             RF->flush_tag(task.tag, task.output, task.dest);

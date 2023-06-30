@@ -1,6 +1,8 @@
 #include "tool.h"
 #include <iostream>
 #include <algorithm>
+#include <ctime>
+#include <memory>
 
 int hex_to_dec(const char source[], int digit) {
     int dec_number = 0;
@@ -26,6 +28,7 @@ int fetch(int source, int high, int low) {
 }
 
 int shuffle(int order[], int length) {
+    srand(time(nullptr));
     for (int i = 0; i < length; ++i) { order[i] = i + 1; }
     std::random_shuffle(order, order + length);
 }
@@ -148,3 +151,31 @@ void print_the_instruction(int instruction) {
             break;
     }
 }
+
+u_int_2::u_int_2(bool num_high, bool num_low) {
+    num[0] = num_high;
+    num[1] = num_low;
+}
+
+u_int_2 &u_int_2::operator++() {
+    if (num[0] && num[1]) { return *this; }
+    if (num[1]) { num[0] = true; }
+    num[1] = !num[1];
+    return *this;
+}
+
+u_int_2 &u_int_2::operator--() {
+    if (!num[0] && !num[1]) { return *this; }
+    if (!num[1]) { num[0] = false; }
+    num[1] = !num[1];
+    return *this;
+}
+
+u_int_2 &u_int_2::operator=(u_int_2 const &obj) {
+    if (this == &obj) { return *this; }
+    num[0] = obj.num[0];
+    num[1] = obj.num[1];
+    return *this;
+}
+
+bool u_int_2::fetch_high() const { return num[0]; }

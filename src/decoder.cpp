@@ -50,7 +50,8 @@ void decoder::decode(int instr_bin, decode_instr &out, bool &to_be_finished) {
             //分支指令，若预测跳转，imd置为现PC+1(offset为2的倍数)，跳转PC；反之，imd置为PC+offset
             out.imd = sign_extend((fetch(instr_bin, 11, 8) << 1) + (fetch(instr_bin, 30, 25) << 5) +
                                   (((instr_bin >> 7) & 1) << 11) + (((instr_bin >> 31) & 1) << 12), 13);
-            if (PRE->jump()) {
+            out.dest = (PC->get_pc()) >> 2;//dest存PC/4，用于寻找对应的分支预测器
+            if (PRE->jump(out.dest)) {
                 PC->set_offset(out.imd);
                 out.imd = PC->get_pc() + 1;
             } else { out.imd += PC->get_pc(); }
@@ -176,7 +177,7 @@ void decoder::decode(int instr_bin, decode_instr &out, bool &to_be_finished) {
     }
 }
 
-bool decoder::is_send() { return instr_decode.instr == 0xff; }
+bool decoder::is_send() const { return instr_decode.instr == 0xff; }
 
 void decoder::execute(bool &to_be_finished) {
     if (!PC->is_stop()) {//读指令

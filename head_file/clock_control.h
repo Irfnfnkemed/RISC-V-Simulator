@@ -38,10 +38,10 @@ public:
     void flush();
 
     //程序是否结束
-    bool finish();
+    bool finish() const;
 
     //返回程序结束值
-    int get_return_value();
+    int get_return_value() const;
 
     //得到分支预测正确率
     double get_predictor_correct_rate();

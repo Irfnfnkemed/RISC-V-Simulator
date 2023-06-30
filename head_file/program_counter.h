@@ -4,7 +4,7 @@
 class program_counter {
 private:
 
-    int pc;
+    int pc = 0;
     int offset = 4;
     bool begin = false;//begin为真表示更新时直接将PC设为偏移量，反之PC加上偏移量
     bool clean = false;//周期末程序是否会清空

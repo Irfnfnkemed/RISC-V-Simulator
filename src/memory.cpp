@@ -1,7 +1,7 @@
 #include "memory.h"
 
 void memory::init() {
-    for (int i = 0; i < 4000000; ++i) { memory_unit[i] = 0; }
+    memset(memory_unit, 0, size * sizeof(u_int8_t));
     char source[10];
     unsigned int addr = 0;
     while (scanf("%s", source) != EOF) {

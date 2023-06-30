@@ -21,7 +21,7 @@ private:
         u_int8_t reg_one = 0xff, reg_two = 0xff;//两个寄存器的编号
         int imd = -1;//用于存放立即数
         u_int8_t dest = 0xff;//目标寄存器的编号(若存在)
-        int other;//存放其他数
+        int other = -1;//存放其他数
     };
 
     decode_instr instr_decode;//解码后指令
@@ -38,7 +38,7 @@ public:
     void init(program_counter *PC_, memory *MEM_, predictor *PRE_);
 
     //是否已经发送至ROB
-    bool is_send();
+    bool is_send() const;
 
     //执行
     void execute(bool &to_be_finished);

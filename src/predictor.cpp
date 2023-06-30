@@ -1,19 +1,21 @@
 #include "predictor.h"
 
-void predictor::init() { counter = counter_next = correct = incorrect = 0; }
-
-bool predictor::jump() { return counter >= 2; }
-
-void predictor::change_counter(bool is_jump, bool is_correct) {
-    if (is_correct) { ++correct; }
-    else { ++incorrect; }
-    if (is_jump) {
-        if (counter < 3) { ++counter_next; }
-    } else {
-        if (counter > 0) { --counter_next; }
-    }
+void predictor::init() {
+    for (int i = 0; i < 256; ++i) { counter[i] = counter_next[i] = u_int_2{false, true}; }
+    correct = incorrect = 0;
 }
 
-double predictor::get_correct_rate() { return (double) correct / (correct + incorrect); }
+bool predictor::jump(u_int8_t id) const { return counter[id].fetch_high(); }
 
-void predictor::flush() { counter = counter_next; }
+void predictor::change_counter(u_int8_t id, bool is_jump, bool is_correct) {
+    if (is_correct) { ++correct; }
+    else { ++incorrect; }
+    if (is_jump) { ++counter_next[id]; }
+    else { --counter_next[id]; }
+}
+
+double predictor::get_correct_rate() const { return (double) correct / (correct + incorrect); }
+
+void predictor::flush() {
+    for (int i = 0; i < 256; ++i) { counter[i] = counter_next[i]; }
+}

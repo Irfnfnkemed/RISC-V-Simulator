@@ -1,7 +1,6 @@
 #include "clock_control.h"
 
 int main() {
-    //freopen("aaa", "r", stdin);
     clock_control RISCV;
     RISCV.init();
     while (!RISCV.finish()) {

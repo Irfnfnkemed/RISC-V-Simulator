@@ -1,10 +1,10 @@
 #include "register_file.h"
 
 void register_file::init() {
-    for (int i = 0; i < 32; ++i) {
-        depend[i] = depend_next[i] = -1;
-        register_unit[i] = register_unit_next[i] = 0;
-    }
+    memset(depend, 0xff, 32 * sizeof(int));
+    memset(depend_next, 0xff, 32 * sizeof(int));
+    memset(register_unit, 0, 32 * sizeof(int));
+    memset(register_unit_next, 0, 32 * sizeof(int));
 }
 
 void register_file::get(u_int8_t reg_, int &depend_, int &value) {

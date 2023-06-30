@@ -21,25 +21,25 @@ public:
 //逻辑运算
 class logic_ALU : public base_ALU {
 public:
-    int execute(u_int8_t instruction, int operand_one, int operand_two);
+    int execute(u_int8_t instruction, int operand_one, int operand_two) override;
 };
 
 //算术运算
 class add_ALU : public base_ALU {
 public:
-    int execute(u_int8_t instruction, int operand_one, int operand_two);
+    int execute(u_int8_t instruction, int operand_one, int operand_two) override;
 };
 
 //位运算
 class shift_ALU : public base_ALU {
 public:
-    int execute(u_int8_t instruction, int operand_one, int operand_two);
+    int execute(u_int8_t instruction, int operand_one, int operand_two) override;
 };
 
 //比较运算
 class compare_ALU : public base_ALU {
 public:
-    int execute(u_int8_t instruction, int operand_one, int operand_two);
+    int execute(u_int8_t instruction, int operand_one, int operand_two) override;
 };
 
 

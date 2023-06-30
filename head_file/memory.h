@@ -5,11 +5,12 @@
 #include <iostream>
 #include "tool.h"
 
+const int size = (1 << 22);
 
 class memory {
 private:
 
-    u_int8_t memory_unit[4000000];//用10进制存储16进制下的内存内容，以字节为单位
+    u_int8_t memory_unit[size];//用10进制存储16进制下的内存内容，以字节为单位
 
 public:
 
