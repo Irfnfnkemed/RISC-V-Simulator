@@ -1,6 +1,7 @@
 #include "clock_control.h"
 
 void clock_control::init() {
+    srand(time(nullptr));
     clock = 0;
     to_be_cleared = to_be_finished = false;
     return_value = -1;
